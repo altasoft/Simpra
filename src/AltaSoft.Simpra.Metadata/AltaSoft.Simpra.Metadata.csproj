@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+		<LangVersion>Latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591;CS1701;CS1702;NU1507</NoWarn>
+	</PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="AltaSoft.DomainPrimitives" Version="5.1.1" />
+  </ItemGroup>
+  
+</Project>
