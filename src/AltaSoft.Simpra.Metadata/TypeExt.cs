@@ -55,6 +55,10 @@ internal static class TypeExt
         }
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        if (type.TryGetUnderlyingDomainPrimitiveType(out var value) && typeof(string) == value)
+        {
+            properties = properties.Where(RemoveDomainPrimitiveDefaultProperties).ToArray();
+        }
         var processedProperties = properties
             .Where(x => x.GetMethod is not null && x.CanRead)
             .SelectMany(prop => Process(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) is null, prop.PropertyType)).Distinct().ToList();
@@ -132,6 +136,12 @@ internal static class TypeExt
         obj.ForEach(x => x.Name = $"{name}.{x.Name}");
 
         return obj;
+    }
+    private static bool RemoveDomainPrimitiveDefaultProperties(PropertyInfo property)
+    {
+        return !((property.Name == "Item" && property.PropertyType == typeof(char)) ||
+                 (property.Name == "Item" && property.PropertyType == typeof(string)) ||
+                 (property.Name == "Length" && property.PropertyType == typeof(int)));
     }
 
     private static readonly IReadOnlyList<Type> s_primitiveTypes = new List<Type>()
