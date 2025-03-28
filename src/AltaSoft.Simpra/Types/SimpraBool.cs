@@ -60,7 +60,7 @@ internal struct SimpraBool : ISimpraType<bool>
     public static bool operator !=(SimpraBool a, bool b) => !(a == b);
 
     //
-    public static SimpraBool In(SimpraBool value, SimpraList<SimpraBool, bool> lookup, bool _) => lookup.Contains(value);
+    public static SimpraBool In(SimpraBool value, SimpraList<SimpraBool, bool> lookup) => lookup.Contains(value);
 
     public readonly SimpraBool Min(SimpraBool b) => new(Value && b.Value);
     public readonly SimpraBool Max(SimpraBool b) => new(Value || b.Value);

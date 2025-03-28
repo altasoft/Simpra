@@ -101,12 +101,28 @@ public class SimpraExpressionTests
     }
 
     [Fact]
-    public void Expression_Should_ReturnTrue_When_DynamicListContainsMatchingItem()
+    public void Expression_Should_ReturnTrue_When_DynamicStringListContainsMatchingItem()
     {
         const string expressionCode =
             """
             let dynamicList = ListSomeCountries('countries')
             return 'RU' in dynamicList or 'US' in dynamicList
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnTrue_When_DynamicIntListContainsMatchingItem()
+    {
+        const string expressionCode =
+            """
+            let dynamicList = ListOfCustomerIds('Good')
+            return 1 in dynamicList
             """;
 
         var simpra = new Simpra();
@@ -1063,6 +1079,11 @@ public class SimpraExpressionTests
         public static string[] ListSomeCountries(string key)
         {
             return ["RU", "BE"];
+        }
+
+        public static int[] ListOfCustomerIds(string key)
+        {
+            return [1, 2];
         }
 
 #pragma warning disable S2325
