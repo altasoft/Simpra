@@ -98,7 +98,7 @@ internal struct SimpraNumber : ISimpraType<decimal>
     public static bool operator <=(SimpraNumber a, SimpraNumber b) => a.Value <= b.Value;
 
     //
-    public static SimpraBool In(SimpraNumber value, SimpraList<SimpraNumber, decimal> lookup, bool _) => lookup.Contains(value);
+    public static SimpraBool In(SimpraNumber value, SimpraList<SimpraNumber, decimal> lookup) => lookup.Contains(value);
 
     public readonly SimpraNumber Min(SimpraNumber b) => new(Math.Min(Value, b.Value));
     public readonly SimpraNumber Max(SimpraNumber b) => new(Math.Max(Value, b.Value));

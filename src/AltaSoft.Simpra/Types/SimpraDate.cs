@@ -69,7 +69,7 @@ internal struct SimpraDate : ISimpraType<DateTime>
     public static bool operator <=(SimpraDate a, SimpraDate b) => a.Value <= b.Value;
 
     //
-    public static SimpraBool In(SimpraDate value, SimpraList<SimpraDate, DateTime> lookup, bool _) => lookup.Contains(value);
+    public static SimpraBool In(SimpraDate value, SimpraList<SimpraDate, DateTime> lookup) => lookup.Contains(value);
 
     public readonly SimpraDate Min(SimpraDate b) => Value.Ticks < b.Value.Ticks ? Value : b.Value;
     public readonly SimpraDate Max(SimpraDate b) => Value.Ticks > b.Value.Ticks ? Value : b.Value;
