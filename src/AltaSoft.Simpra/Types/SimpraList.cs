@@ -8,8 +8,8 @@ internal readonly struct SimpraList<TSimpraType, TNetType> : ISimpraType<List<TS
     where TSimpraType : ISimpraType<TNetType>
 {
     public List<TSimpraType> Value { get; }
+    public static ISimpraType<List<TSimpraType>> NoValue => new SimpraList<TSimpraType, TNetType>(null);
     public bool HasValue { get; }
-
     public SimpraList(List<TSimpraType>? value)
     {
         Value = value ?? [];
@@ -23,7 +23,11 @@ internal readonly struct SimpraList<TSimpraType, TNetType> : ISimpraType<List<TS
     // Sets or Gets the element at the given index.
     public TSimpraType this[SimpraNumber index]
     {
-        get => Value[index - 1];
+        get
+        {
+            var i = index - 1;
+            return i > 0 && i < Value.Count ? Value[i] : (TSimpraType)TSimpraType.NoValue;
+        }
         set => Value[index - 1] = value;
     }
 

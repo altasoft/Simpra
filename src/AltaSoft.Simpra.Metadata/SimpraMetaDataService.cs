@@ -30,7 +30,7 @@ public sealed class SimpraMetadataService
                 Functions = GetFunctions(v.ModelType, v.ExternalFunctionsType)
             }
         })).ToFrozenDictionary();
-        return;
+
 
         List<FunctionModel> GetFunctions(Type modelType, Type? externalFunctionsType)
         {

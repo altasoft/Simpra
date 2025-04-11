@@ -1,11 +1,16 @@
 ﻿namespace AltaSoft.Simpra.Types;
 
-internal readonly struct SimpraInteropObject<T> : ISimpraType
+internal readonly struct SimpraInteropObject<T> : ISimpraType<T>
 {
-    public T? Value { get; init; }
-    public bool HasValue => Value is not null;
+    public T Value { get; init; }
+    public static ISimpraType<T> NoValue => new SimpraInteropObject<T>(default);
+    public bool HasValue { get; }
 
-    public SimpraInteropObject(T? value) => Value = value;
+    public SimpraInteropObject(T? value)
+    {
+        Value = value ?? default!;
+        HasValue = value is not null;
+    }
 
     public bool Equals(SimpraInteropObject<T> other) => Equals(Value, other.Value);
 

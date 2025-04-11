@@ -9,7 +9,7 @@ namespace AltaSoft.Simpra.Types;
 internal struct SimpraNumber : ISimpraType<decimal>
 {
     public static SimpraNumber Zero { get; } = new(0m);
-    public static SimpraNumber NoValue { get; } = new((decimal?)null);
+    public static ISimpraType<decimal> NoValue { get; } = new SimpraNumber((decimal?)null);
 
     public decimal Value { get; private set; }
     public bool HasValue { get; private set; }

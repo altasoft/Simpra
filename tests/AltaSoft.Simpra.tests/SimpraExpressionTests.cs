@@ -5,6 +5,99 @@ namespace AltaSoft.Simpra.Tests;
 public class SimpraExpressionTests
 {
     [Fact]
+    public void Expression_Should_ReturnFalse_When_IndexIsOutOfRangeAndValueCompared()
+    {
+        const string expressionCode =
+            """
+            return Transfer.A[10] is  1
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer!.A = [1, 2, 3];
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnFalse_When_NestedListIsUsed()
+    {
+        const string expressionCode =
+            """
+            return Transfer.OuterList[10].InnerList[1] is  1
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer!.A = [1, 2, 3];
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnFalse_When_NestedListIsUsedX()
+    {
+        const string expressionCode =
+            """
+            return CustomerList[1] has value
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.CustomerList = new List<Customer2>();
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnFalse_When_ArrayIsNullAndValueCompared()
+    {
+        const string expressionCode =
+            """
+            return Transfer.A[1] is  1
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer = null;
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnDefault_When_ArrayIsNull()
+    {
+        const string expressionCode =
+            """
+            return Transfer.A[10]
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer = null;
+        var result = simpra.Execute<int, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void Expression_Should_ReturnFalse_When_TheValueIsNull()
+    {
+        const string expressionCode =
+            """
+            return Transfer.Customer.Id is 1
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer = null;
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+
     public void Expression_Should_ReturnMultipleValues_When_AggregateListValues()
     {
         const string expressionCode =
@@ -35,7 +128,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 50;
+        model.Transfer!.Amount = 50;
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -53,7 +146,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Currency = "USD";
+        model.Transfer!.Currency = "USD";
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -72,7 +165,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 150;
+        model.Transfer!.Amount = 150;
         model.Transfer.Currency = "USD";
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
@@ -145,7 +238,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = -50;
+        model.Transfer!.Amount = -50;
         model.Transfer.Currency = "EUR";
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
@@ -167,7 +260,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 100;
+        model.Transfer!.Amount = 100;
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -188,7 +281,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 150;
+        model.Transfer!.Amount = 150;
 
         var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -225,7 +318,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 200;
+        model.Transfer!.Amount = 200;
 
         var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -248,7 +341,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 200;
+        model.Transfer!.Amount = 200;
         model.Transfer.Currency = "USD";
 
         var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
@@ -311,7 +404,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 180;
+        model.Transfer!.Amount = 180;
         model.Transfer.Currency = "USD";
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
@@ -372,7 +465,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 11;
+        model.Transfer!.Amount = 11;
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.False(result);
@@ -398,21 +491,22 @@ public class SimpraExpressionTests
         var simpra = new Simpra();
         var model = GetTestModel();
 
-        model.Transfer.Amount = 8;
+        model.Transfer!.Amount = 8;
         var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(10, result);
 
-        model.Transfer.Amount = 6;
+        model.Transfer!.Amount = 6;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(6, result);
 
-        model.Transfer.Amount = 2;
+        model.Transfer!.Amount = 2;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(2, result);
 
-        model.Transfer.Amount = -1;
+        model.Transfer!.Amount = -1;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(1000, result);
+
     }
 
     [Fact]
@@ -434,19 +528,19 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 8;
+        model.Transfer!.Amount = 8;
         var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(10, result);
 
-        model.Transfer.Amount = 6;
+        model.Transfer!.Amount = 6;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(6, result);
 
-        model.Transfer.Amount = 2;
+        model.Transfer!.Amount = 2;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(2, result);
 
-        model.Transfer.Amount = -1;
+        model.Transfer!.Amount = -1;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(1000, result);
     }
@@ -808,7 +902,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 200;
+        model.Transfer!.Amount = 200;
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.True(result);
@@ -893,7 +987,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Amount = 50;
+        model.Transfer!.Amount = 50;
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.True(result);
@@ -919,7 +1013,7 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.Transfer.Currency = "";
+        model.Transfer!.Currency = "";
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.True(result);
@@ -972,7 +1066,7 @@ public class SimpraExpressionTests
 
         Assert.True(result);
 
-        model.Transfer.Currency = "GEL";
+        model.Transfer!.Currency = "GEL";
         result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.False(result);
@@ -1019,7 +1113,7 @@ public class SimpraExpressionTests
 
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
 
-        Assert.Equal(15, model.Transfer.Amount);
+        Assert.Equal(15, model.Transfer!.Amount);
         Assert.Equal("GBP", model.Transfer.Currency);
         Assert.False(result);
     }

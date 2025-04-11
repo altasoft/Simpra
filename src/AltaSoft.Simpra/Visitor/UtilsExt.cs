@@ -48,9 +48,14 @@ internal static class UtilsExt
         var simpraTypeInterface = type
             .GetInterfaces()
             .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISimpraType<>));
-        return simpraTypeInterface is { IsGenericType: true, GenericTypeArguments.Length: 1 }
-            ? simpraTypeInterface.GenericTypeArguments[0]
-            : throw new InvalidOperationException($"Type '{type}' is not a Simpra type");
+
+        if (simpraTypeInterface is { IsGenericType: true, GenericTypeArguments.Length: 1 })
+            return simpraTypeInterface.GenericTypeArguments[0];
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(SimpraInteropObject<>))
+            return type.GenericTypeArguments[0];
+
+        throw new InvalidOperationException($"Type '{type}' is not a Simpra type");
     }
 
     /// <summary>
@@ -184,7 +189,6 @@ internal static class UtilsExt
     ///// </summary>
     ///// <param name="self">The type to check.</param>
     ///// <returns><c>true</c> if the specified type is a domain primitive; otherwise, <c>false</c>.</returns>
-    //private static bool IsDomainPrimitive(this Type self) => typeof(IDomainValue).IsAssignableFrom(self);
     public static bool IsAsyncMethod(this MethodInfo method) => typeof(Task).IsAssignableFrom(method.ReturnType) ||
                (method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>));
 }

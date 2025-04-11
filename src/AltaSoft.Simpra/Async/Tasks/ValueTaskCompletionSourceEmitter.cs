@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 // ReSharper disable ObjectCreationAsStatement
 
 namespace AltaSoft.Simpra.Async.Tasks;
-
+#pragma warning disable CA2012
 internal sealed class ValueTaskCompletionSourceEmitter<TResult> : ICompletionSourceEmitter
 {
     private static readonly ConstructorInfo s_ctorValueTaskCompletionSourceOfTResult = Reflect.GetConstructor(() => new ValueTaskCompletionSource<TResult>());
     private static readonly MethodInfo s_methValueTaskCompletionSourceOfTResultSetResult = Reflect<ValueTaskCompletionSource<TResult>>.GetMethod(vt => vt.SetResult(default!));
     private static readonly MethodInfo s_methValueTaskCompletionSourceOfTResultSetException = Reflect<ValueTaskCompletionSource<TResult>>.GetMethod(vt => vt.SetException(default!));
+
     private static readonly MethodInfo s_methValueTaskCompletionSourceOfTResultGetValueTask = Reflect<ValueTaskCompletionSource<TResult>>.GetMethod(vt => vt.GetValueTask());
     private static readonly ConstructorInfo s_ctorValueTaskOfTResultResult = Reflect.GetConstructor(() => new ValueTask<TResult>(default(TResult)!));
     private static readonly ConstructorInfo s_ctorValueTaskOfTResultTask = Reflect.GetConstructor(() => new ValueTask<TResult>(default(Task<TResult>)!));

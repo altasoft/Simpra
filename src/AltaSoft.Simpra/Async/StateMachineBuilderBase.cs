@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using AltaSoft.Simpra.Async.Collections;
 
 namespace AltaSoft.Simpra.Async;
-
+#pragma warning disable CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
 internal abstract class StateMachineBuilderBase : IStateMachineVariables
 {
     protected static readonly ConstructorInfo CtorInvalidOperationExpression = typeof(InvalidOperationException).GetConstructor(Type.EmptyTypes)
@@ -108,7 +108,9 @@ internal abstract class StateMachineBuilderBase : IStateMachineVariables
             varEx = Expression.Variable(typeof(Exception), "ex");
             catchBody.Clear();
             catchBody.Add(Expression.Assign(VarException, varEx));
+
             if (state.TryInfos.TryFirstNotNull(ti => ti.FinallyState, out finallyState))
+
             {
                 catchBody.Add(Expression.Assign(VarResumeState, Expression.Constant(rethrowState.StateId)));
                 catchBody.Add(Expression.Assign(VarState, Expression.Constant(finallyState.StateId)));

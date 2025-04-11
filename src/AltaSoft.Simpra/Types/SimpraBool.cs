@@ -10,7 +10,7 @@ internal struct SimpraBool : ISimpraType<bool>
 {
     public static SimpraBool False { get; } = new(false);
     public static SimpraBool True { get; } = new(true);
-    public static SimpraBool NoValue { get; } = new((bool?)null);
+    public static ISimpraType<bool> NoValue { get; } = new SimpraBool((bool?)null);
 
     public bool Value { get; private set; }
     public bool HasValue { get; private set; }

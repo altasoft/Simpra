@@ -11,4 +11,7 @@ internal interface ISimpraType<out T> : ISimpraType
 {
     [NotNull]
     T Value { get; }
+
+    static abstract ISimpraType<T> NoValue { get; }
+
 }

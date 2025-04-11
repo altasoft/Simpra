@@ -23,7 +23,7 @@ internal static class InternalLanguageFunctions
     public static SimpraNumber round(SimpraNumber input, SimpraNumber decimals) => input.HasValue ? new SimpraNumber(Math.Round(input.Value, (int)decimals.Value)) : input;
 
     public static SimpraNumber abs(SimpraNumber input) => input.HasValue ? new SimpraNumber(Math.Abs(input.Value)) : input;
-    public static SimpraNumber sum(SimpraList<SimpraNumber, decimal> input) => input.HasValue ? input.Value.Sum(x => x.Value) : SimpraNumber.NoValue;
+    public static SimpraNumber sum(SimpraList<SimpraNumber, decimal> input) => input.HasValue ? input.Value.Sum(x => x.Value) : (SimpraNumber)SimpraNumber.NoValue;
 
     public static SimpraString @string(SimpraNumber input) => new(input.ToString());
     public static SimpraString @string(SimpraBool input) => new(input.ToString());
