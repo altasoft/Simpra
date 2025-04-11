@@ -93,8 +93,6 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
     private static Expression HandleCompoundAssignment(Expression left, Expression right, SimpraParser.CompoundAssignmentContext context)
     {
-        //if (!left.Type.IsSimpraList())
-        //    throw new SimpraException(context, "Left operand of '+=' or '-=' must be a list");
 
         var methodName = context.Operator.Text switch
         {

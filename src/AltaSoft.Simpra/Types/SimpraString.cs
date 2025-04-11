@@ -9,7 +9,7 @@ namespace AltaSoft.Simpra.Types;
 
 internal struct SimpraString : ISimpraType<string>
 {
-    public static SimpraString NoValue { get; } = new((string?)null);
+    public static ISimpraType<string> NoValue { get; } = new SimpraString((string?)null);
     public static SimpraString Empty { get; } = new(string.Empty);
 
     public string Value { get; private set; }

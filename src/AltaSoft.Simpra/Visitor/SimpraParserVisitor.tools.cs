@@ -51,11 +51,6 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         {
             expandedType = typeof(SimpraDate);
         }
-        //else
-        //if (expandedType.IsIReadOnlyDictionaryT())
-        //{
-        //    expandedType = typeof(SimpraDictionary);
-        //}
         else
         if (convertLists && expandedType.IsIEnumerableT() && !expandedType.IsIReadOnlyDictionaryT())
         {
@@ -65,24 +60,14 @@ internal partial class SimpraParserVisitor<TResult, TModel>
                 ? arrayElementType
                 : GetCorrespondingSimpraType(arrayElementType, true, context);
 
-            expandedType = typeof(SimpraList<,>).MakeGenericType([tSimpraType, tSimpraType.GetSimpraTypeNetType()]);
+            expandedType = typeof(SimpraList<,>).MakeGenericType(tSimpraType, tSimpraType.GetSimpraTypeNetType());
         }
         else
         {
-            expandedType = typeof(SimpraInteropObject<>).MakeGenericType([type]);
+            expandedType = typeof(SimpraInteropObject<>).MakeGenericType(type);
         }
         return expandedType;
     }
-
-    //private static Expression ConvertToSimpraObject(Expression expr)
-    //{
-    //    var type = expr.Type;
-
-    //    if (type == typeof(SimpraObject))
-    //        return expr;
-
-    //    return Expression.New(typeof(SimpraObject).GetConstructor([expr.Type])!, expr);
-    //}
 
     // Converts external type to Simpra type
     private static Expression ConvertToSimpraType(Expression expr, bool convertLists, ParserRuleContext context)
@@ -130,11 +115,6 @@ internal partial class SimpraParserVisitor<TResult, TModel>
                 throw new InvalidOperationException($"The required constructor for {simpraType.Name} was not found");
             return Expression.New(constructorInfo, expr);
         }
-
-        //if (simpraType == typeof(SimpraDictionary))
-        //{
-        //    return NewSimpraDictionary(expr);
-        //}
 
         return Expression.Convert(expr, simpraType);
     }
@@ -383,7 +363,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     {
         var type = exprValue.Type;
 
-        var variable = Expression.Parameter(type, name);
+        var variable = Expression.Variable(type, name);
         _variables.Add(name, (variable, type));
 
         return (variable, type);
@@ -433,8 +413,8 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         var simpraElementType = array[0].Type;
         var elementType = simpraElementType.GetSimpraTypeNetType();
-        var simpraListType = typeof(SimpraList<,>).MakeGenericType([simpraElementType, elementType]);
-        var ctorParamType = typeof(IEnumerable<>).MakeGenericType([simpraElementType]);
+        var simpraListType = typeof(SimpraList<,>).MakeGenericType(simpraElementType, elementType);
+        var ctorParamType = typeof(IEnumerable<>).MakeGenericType(simpraElementType);
 
         var constructorInfo = simpraListType.GetConstructor([ctorParamType]);
         if (constructorInfo is null)
@@ -447,34 +427,56 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         return Expression.New(constructorInfo, arrayExpression);
     }
 
-    private static NewExpression NewSimpraList(Expression arrayElements, ParserRuleContext context)
+    private static Expression NewSimpraList(Expression arrayElements, ParserRuleContext context)
     {
-        // Ensure the input type is IEnumerable<T>
         if (!arrayElements.Type.IsIEnumerableT())
             throw new InvalidOperationException("Enumeration elements must implement IEnumerable<T>");
 
         var arrayElementType = arrayElements.Type.GetEnumerationElementType(context);
-
         var tSimpraType = GetCorrespondingSimpraType(arrayElementType, true, context);
 
-        var simpraListType = typeof(SimpraList<,>).MakeGenericType([tSimpraType, tSimpraType.GetSimpraTypeNetType()]);
-        var ctorParamType = typeof(IEnumerable<>).MakeGenericType([tSimpraType]);
+        var simpraListType = typeof(SimpraList<,>).MakeGenericType(tSimpraType, tSimpraType.GetSimpraTypeNetType());
+        var ctorParamType = typeof(IEnumerable<>).MakeGenericType(tSimpraType);
 
         var constructorInfo = simpraListType.GetConstructor([ctorParamType]);
         if (constructorInfo is null)
             throw new InvalidOperationException($"The required constructor for {simpraListType.Name} was not found");
 
+        // Create a variable for arrayElements to avoid duplication
+        var arrayVar = Expression.Variable(arrayElements.Type, "arrayElementsVar");
+        var assignArray = Expression.Assign(arrayVar, arrayElements);
+
         // Create a parameter to iterate over the enumerable
         var parameter = Expression.Parameter(arrayElementType, "x");
 
-        // Create a conversion expression for each element in the enumerable
-        var convertedArrayElements = Expression.Call(
-            typeof(Enumerable), nameof(Enumerable.Select), [arrayElementType, tSimpraType],
-            arrayElements,
-            Expression.Lambda(Expression.Convert(ConvertToSimpraType(parameter, true, context), tSimpraType), parameter)
+        // Create the conversion lambda
+        var conversionLambda = Expression.Lambda(
+            Expression.Convert(ConvertToSimpraType(parameter, true, context), tSimpraType),
+            parameter
         );
 
-        return Expression.New(constructorInfo, convertedArrayElements);
+        // Generate Enumerable.Select(arrayVar, x => ConvertToSimpraType(x))
+        var projectedElements = Expression.Call(
+            typeof(Enumerable), nameof(Enumerable.Select),
+            [arrayElementType, tSimpraType],
+            arrayVar,
+            conversionLambda
+        );
+
+        // Generate fallback: Enumerable.Empty<tSimpraType>()
+        var emptyEnumerable = Expression.Call(
+            typeof(Enumerable), nameof(Enumerable.Empty), [tSimpraType]
+        );
+
+        // If arrayVar != null ? Select(...) : Empty<tSimpraType>()
+        var nullCheck = Expression.NotEqual(arrayVar, Expression.Constant(null, arrayElements.Type));
+        var safeProjectedElements = Expression.Condition(nullCheck, projectedElements, emptyEnumerable);
+
+        // Final constructor call
+        var newSimpraList = Expression.New(constructorInfo, safeProjectedElements);
+
+        // Return wrapped block: declare, assign, use
+        return Expression.Block([arrayVar], assignArray, newSimpraList);
     }
 
     private static BinaryExpression SetCaseSensitivity(bool isCaseSensitive)

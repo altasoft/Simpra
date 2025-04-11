@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using AltaSoft.Simpra.Types;
@@ -22,6 +23,8 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     private readonly LabelTarget _endLabel;
 
     public Type DataModelType { get; }
+
+    private int _localVariableCounter;
 
     public SimpraParserVisitor(SimpraCompilerOptions? compilerOptions, ParameterExpression rootParameter, ParameterExpression? externalFunctionsParameter, ParameterExpression cancellationTokenParam)
     {
@@ -48,7 +51,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         if (context.Expr is not null) // Single expression
         {
-            return Expression.Block([exprCaseSensitivity, ConvertToType(Visit(context.Expr), typeof(TResult), context)]);
+            return Expression.Block(exprCaseSensitivity, ConvertToType(Visit(context.Expr), typeof(TResult), context));
         }
 
         // Block of statements
@@ -58,7 +61,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         var variables = _variables.Values.Select(v => v.Variable).ToList();
 
-        return Expression.Block(variables, [exprCaseSensitivity, expression, exprEndLabel]);
+        return Expression.Block(variables, exprCaseSensitivity, expression, exprEndLabel);
     }
 
     /// <inheritdoc />
@@ -195,23 +198,45 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     /// <inheritdoc />
     public Expression VisitMemberAccess(SimpraParser.MemberAccessContext context)
     {
+
         var exprBaseObject = Visit(context.Object);
 
         var propertyName = context.PropertyName.Text;
-
         if (exprBaseObject.Type.IsSimpraInteropObject())
         {
             exprBaseObject = Expression.Property(exprBaseObject, nameof(SimpraInteropObject<object>.Value));
+
         }
 
-        var exprProperty = Expression.Property(exprBaseObject, propertyName);
+        var accessType = GetIdentifierAccessType(context);
 
-        return GetIdentifierAccessType(context) switch
+        // If instance is not a reference type or Nullable<T>, wrap in null check
+        if (accessType == IdentifierAccessType.Write || exprBaseObject.Type.IsValueType && Nullable.GetUnderlyingType(exprBaseObject.Type) is null)
         {
-            IdentifierAccessType.Read => ConvertToSimpraType(exprProperty, true, context),
-            IdentifierAccessType.Write => exprProperty,
-            _ => throw new ApplicationException($"Unknown value for enum '{nameof(IdentifierAccessType)}'")
-        };
+            var exprProperty = Expression.Property(exprBaseObject, propertyName);
+
+            return accessType switch
+            {
+                IdentifierAccessType.Read => ConvertToSimpraType(exprProperty, true, context),
+                IdentifierAccessType.Write => exprProperty,
+                _ => throw new InvalidEnumArgumentException($"Unknown value for enum '{nameof(IdentifierAccessType)}'")
+            };
+        }
+
+        var variable = Expression.Variable(exprBaseObject.Type, "instance" + _localVariableCounter++);
+        var assignExpr = Expression.Assign(variable, exprBaseObject);
+
+        var exprProperty2 = Expression.Property(variable, propertyName);
+        var notNull = Expression.NotEqual(variable, Expression.Constant(null, exprBaseObject.Type));
+
+        var defaultValue = Expression.Default(exprProperty2.Type);
+
+        var expr = Expression.Condition(notNull, exprProperty2, defaultValue);
+
+        var block = Expression.Block([variable], assignExpr, expr);
+
+        return ConvertToSimpraType(block, true, context);
+
     }
 
     /// <inheritdoc />
@@ -245,10 +270,12 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         if (defaultIndexer is not null)
         {
-            var convertedIndex = Expression.Convert(index, defaultIndexer.PropertyType);
+            var defaultIndexType = defaultIndexer.GetIndexParameters()[0].ParameterType;
+            if (index.Type != defaultIndexType)
+                index = Expression.Convert(index, defaultIndexType);
 
             // Generate a property indexer access expression
-            return ConvertToSimpraType(Expression.MakeIndex(left, defaultIndexer, [convertedIndex]), false, context);
+            return ConvertToSimpraType(Expression.MakeIndex(left, defaultIndexer, [index]), false, context);
         }
 
         throw new InvalidOperationException($"The type '{objectType.Name}' does not support index access");
@@ -272,8 +299,6 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         // Handle external function calls (both sync and async)
         return CallFunction(methodName, [.. exprArguments], context);
-
-        throw new SimpraException(context, $"Unknown function '{methodName}'");
     }
 
     /// <inheritdoc />
@@ -495,7 +520,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         {
             IdentifierAccessType.Read => ConvertToSimpraType(exprProperty, true, context),
             IdentifierAccessType.Write => exprProperty,
-            _ => throw new ApplicationException($"Unknown value for enum '{nameof(IdentifierAccessType)}'")
+            _ => throw new InvalidEnumArgumentException($"Unknown value for enum '{nameof(IdentifierAccessType)}'")
         };
     }
 

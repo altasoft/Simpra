@@ -16,7 +16,9 @@ internal partial class ContinuationBuilder
         {
             throw new InvalidOperationException("Empty block");
         }
+#pragma warning disable S1264
         for (; ; )
+#pragma warning restore S1264
         {
             var expression = Visit(enumerator.Current);
             if (enumerator.MoveNext())

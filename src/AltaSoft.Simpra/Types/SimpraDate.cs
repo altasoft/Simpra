@@ -8,7 +8,7 @@ namespace AltaSoft.Simpra.Types;
 
 internal struct SimpraDate : ISimpraType<DateTime>
 {
-    public static SimpraDate NoValue { get; } = new((DateTime?)null);
+    public static ISimpraType<DateTime> NoValue { get; } = new SimpraDate((DateTime?)null);
 
     public DateTime Value { get; private set; }
     public bool HasValue { get; private set; }

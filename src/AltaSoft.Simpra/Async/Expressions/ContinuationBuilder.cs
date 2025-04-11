@@ -80,7 +80,7 @@ internal sealed partial class ContinuationBuilder : ExpressionVisitor, IAsyncExp
             var exprVisited = Visit(expression);
             var exitState = _currentState;
             var fiber = new Fiber(entryState, exitState, exprVisited);
-            // fiber.SetName("Unnamed", entryState.StateId, "");
+
             return fiber;
         }
         finally

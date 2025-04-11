@@ -2,7 +2,7 @@
 {
     public class TestModel
     {
-        public required Transfer Transfer { get; set; }
+        public required Transfer? Transfer { get; set; }
         public required Customer Customer { get; set; }
         public required string Remittance { get; set; }
 
@@ -17,5 +17,7 @@
         public IEnumerable<short> Values { get; set; } = [1, 2, 3];
         public NonNegativeAmount? NullableAmount { get; set; }
         public int? NullableIntegerProperty { get; set; }
+        public List<Customer2> CustomerList { get; set; }
+
     }
 }

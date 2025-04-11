@@ -252,7 +252,9 @@ internal static class TypeExt
                 for (var i = 0; i < typeParameters.Length; ++i)
                 {
                     var typeParamName = typeParameters[i].AliasOrName();
+#pragma warning disable S1643
                     friendlyName += i == 0 ? typeParamName : ", " + typeParamName;
+#pragma warning restore S1643
                 }
                 friendlyName += ">";
             }
