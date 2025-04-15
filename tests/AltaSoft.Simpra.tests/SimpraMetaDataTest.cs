@@ -87,14 +87,5 @@ public class MyClass
 
 public class MyClass1
 {
-    public int Age { get; set; }
-    public MyClass2[] Class2s { get; set; }
-
-}
-
-
-public class MyClass2
-{
-    public int Old { get; set; }
-
+    public int Info { get; set; }
 }
