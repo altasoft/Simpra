@@ -82,7 +82,6 @@ internal static class TypeExt
                 }
             ];
         }
-
         if (s_primitiveTypes.Contains(type))
         {
             return
@@ -114,29 +113,42 @@ internal static class TypeExt
         {
             var collectionProp = ProcessProperties(type.GetElementType() ?? throw new InvalidOperationException("Should not be null"));
             var aliasOrName = type.AliasOrName();
-            collectionProp.ForEach(x => x.Name = $"{aliasOrName}.{x.Name}");
+            var collection = MapToPrefixedPropertyModels(collectionProp, name);
             return
             [
                 new PropertyModel { Name = name, Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired },
-                ..collectionProp
+                ..collection
             ];
         }
         if (type is { IsGenericType: true, GenericTypeArguments: [_] } && typeof(IEnumerable).IsAssignableFrom(type))
         {
             var collectionProp = ProcessProperties(type.GetGenericArguments()[0]);
             var aliasOrName = type.AliasOrName();
-            collectionProp.ForEach(x => x.Name = $"{aliasOrName}.{x.Name}");
+            var collection = MapToPrefixedPropertyModels(collectionProp, name);
             return
             [
                 new PropertyModel { Name = name, Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired },
-                ..collectionProp
+                ..collection
             ];
         }
-        var obj = ProcessProperties(Nullable.GetUnderlyingType(type) ?? type);
-        obj.ForEach(x => x.Name = $"{name}.{x.Name}");
 
-        return obj;
+        var obj = ProcessProperties(Nullable.GetUnderlyingType(type) ?? type);
+        var objCollection = MapToPrefixedPropertyModels(obj, name);
+
+        return objCollection;
     }
+
+    private static List<PropertyModel> MapToPrefixedPropertyModels(List<PropertyModel> collection, string name)
+    {
+        return collection.Select(x => new PropertyModel
+        {
+            Name = $"{name}[].{x.Name}",
+            Description = x.Description,
+            Type = x.Type,
+            Required = x.Required
+        }).ToList();
+    }
+
     private static bool RemoveDomainPrimitiveDefaultProperties(PropertyInfo property)
     {
         return !((property.Name == "Item" && property.PropertyType == typeof(char)) ||

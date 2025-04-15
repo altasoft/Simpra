@@ -67,6 +67,8 @@ public class MyChildClass : MyClass
 {
     public required string Name { get; set; }
     public int Age { get; set; }
+    public MyClass1[] Class1s { get; set; }
+
     public CountryCode[] Countries { get; set; }
 
     public void Child()
@@ -81,4 +83,9 @@ public class MyClass
     public void Father()
     {
     }
+}
+
+public class MyClass1
+{
+    public int Info { get; set; }
 }
