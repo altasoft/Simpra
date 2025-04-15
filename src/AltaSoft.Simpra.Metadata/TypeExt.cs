@@ -55,10 +55,6 @@ internal static class TypeExt
         }
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-        if (type.TryGetUnderlyingDomainPrimitiveType(out var value) && typeof(string) == value)
-        {
-            properties = properties.Where(RemoveDomainPrimitiveDefaultProperties).ToArray();
-        }
         var processedProperties = properties
             .Where(x => x.GetMethod is not null && x.CanRead)
             .SelectMany(prop => Process(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) is null, prop.PropertyType)).Distinct().ToList();
@@ -111,31 +107,54 @@ internal static class TypeExt
         }
         if (type.IsArray)
         {
-            var collectionProp = ProcessProperties(type.GetElementType() ?? throw new InvalidOperationException("Should not be null"));
-            var aliasOrName = type.AliasOrName();
-            var collection = MapToPrefixedPropertyModels(collectionProp, name);
-            return
-            [
-                new PropertyModel { Name = name, Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired },
-                ..collection
-            ];
+            var elementType = type.GetElementType() ?? throw new InvalidOperationException("Should not be null");
+
+            if (elementType.Namespace == "System")
+            {
+                var aliasOrName = (Nullable.GetUnderlyingType(type) ?? type).AliasOrName();
+                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+            }
+
+            if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
+            {
+                var aliasOrName = primitiveType.AliasOrName();
+                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+            }
+
+            var collectionProp = ProcessProperties(elementType);
+
+            return MapToPrefixedPropertyModels(collectionProp, name);
         }
+
         if (type is { IsGenericType: true, GenericTypeArguments: [_] } && typeof(IEnumerable).IsAssignableFrom(type))
         {
-            var collectionProp = ProcessProperties(type.GetGenericArguments()[0]);
-            var aliasOrName = type.AliasOrName();
-            var collection = MapToPrefixedPropertyModels(collectionProp, name);
-            return
-            [
-                new PropertyModel { Name = name, Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired },
-                ..collection
-            ];
+            var elementType = type.GetGenericArguments()[0];
+
+            if (elementType.Namespace == "System")
+            {
+                var aliasOrName = (Nullable.GetUnderlyingType(type) ?? type).AliasOrName();
+                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+            }
+
+            if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
+            {
+                var aliasOrName = primitiveType.AliasOrName();
+                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+            }
+
+            var collectionProp = ProcessProperties(elementType);
+
+            return MapToPrefixedPropertyModels(collectionProp, name);
         }
 
         var obj = ProcessProperties(Nullable.GetUnderlyingType(type) ?? type);
-        var objCollection = MapToPrefixedPropertyModels(obj, name);
-
-        return objCollection;
+        return obj.Select(x => new PropertyModel
+        {
+            Name = $"{name}.{x.Name}",
+            Description = x.Description,
+            Type = x.Type,
+            Required = x.Required
+        }).ToList();
     }
 
     private static List<PropertyModel> MapToPrefixedPropertyModels(List<PropertyModel> collection, string name)
@@ -147,13 +166,6 @@ internal static class TypeExt
             Type = x.Type,
             Required = x.Required
         }).ToList();
-    }
-
-    private static bool RemoveDomainPrimitiveDefaultProperties(PropertyInfo property)
-    {
-        return !((property.Name == "Item" && property.PropertyType == typeof(char)) ||
-                 (property.Name == "Item" && property.PropertyType == typeof(string)) ||
-                 (property.Name == "Length" && property.PropertyType == typeof(int)));
     }
 
     private static readonly IReadOnlyList<Type> s_primitiveTypes = new List<Type>()
