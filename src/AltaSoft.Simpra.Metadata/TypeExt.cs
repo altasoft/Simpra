@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using AltaSoft.DomainPrimitives;
 using AltaSoft.Simpra.Metadata.Models;
 
@@ -56,6 +57,7 @@ internal static class TypeExt
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
         var processedProperties = properties
+            .Where(x => x.GetCustomAttribute<JsonIgnoreAttribute>() is null)
             .Where(x => x.GetMethod is not null && x.CanRead)
             .SelectMany(prop => Process(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) is null, prop.PropertyType)).Distinct().ToList();
 
