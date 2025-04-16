@@ -1,4 +1,6 @@
-﻿using AltaSoft.Simpra.Metadata;
+﻿using System.Text.Json.Serialization;
+using System.Xml.Serialization;
+using AltaSoft.Simpra.Metadata;
 using AltaSoft.Simpra.Metadata.Models;
 using AltaSoft.Simpra.Tests.Models;
 
@@ -20,7 +22,7 @@ public class SimpraMetaDataTest
 
         Assert.NotNull(typeModel);
         Assert.Equal("MyChildClass", typeModel.Name);
-        Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyChildClass.Name));
+        Assert.Contains(typeModel.Properties, p => p.Name != nameof(MyChildClass.Name));
         Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyChildClass.Age));
         Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyClass.Base));
         Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyChildClass.Country));
@@ -67,7 +69,9 @@ public class SimpraMetaDataTest
 
 public class MyChildClass : MyClass
 {
+    [JsonIgnore]
     public required string Name { get; set; }
+    [XmlIgnore]
     public int Age { get; set; }
     public MyClass1[] CollectionClass1 { get; set; }
     public CountryCode[] Countries { get; set; }
