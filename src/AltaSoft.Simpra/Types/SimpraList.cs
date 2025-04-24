@@ -26,7 +26,7 @@ internal readonly struct SimpraList<TSimpraType, TNetType> : ISimpraType<List<TS
         get
         {
             var i = index - 1;
-            return i > 0 && i < Value.Count ? Value[i] : (TSimpraType)TSimpraType.NoValue;
+            return i >= 0 && i < Value.Count ? Value[i] : (TSimpraType)TSimpraType.NoValue;
         }
         set => Value[index - 1] = value;
     }
@@ -88,4 +88,5 @@ internal readonly struct SimpraList<TSimpraType, TNetType> : ISimpraType<List<TS
         : $"[{string.Join(", ", Value.Select(x => x.ToString() ?? "null"))}]";
 
     internal bool Contains(TSimpraType value) => Value.Any(x => x.Value.Equals(value.Value));
+
 }
