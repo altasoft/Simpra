@@ -112,6 +112,13 @@ internal struct SimpraString : ISimpraType<string>
             ? default
             : throw new InvalidOperationException($"Cannot convert null to non-nullable enum of type '{typeof(TEnum).Name}'");
     }
+
+    public static TEnum? ToNullableEnum<TEnum>(SimpraString value)
+    {
+        var type = typeof(TEnum).IsNullableT(out var underlyingType) ? underlyingType : typeof(TEnum);
+
+        return value.HasValue ? (TEnum?)Enum.Parse(type, value.Value) : default;
+    }
     public readonly bool Equals(SimpraString other) => Value == other.Value;
 
     /// <inheritdoc />
