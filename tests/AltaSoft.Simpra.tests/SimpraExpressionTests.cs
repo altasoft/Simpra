@@ -1438,6 +1438,18 @@ public class SimpraExpressionTests
     }
 
     [Fact]
+    public void ExecuteWitNullableEnum_ShouldReturnValue()
+    {
+        const string expressionCode = "return Nint1";
+
+        var simpra = new Simpra();
+        var model = GetTestModel(); // Model is irrelevant here
+        model.Nint1 = 1;
+        var result = simpra.Execute<int?, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
     public void Execute_WithValidColorReference_ShouldReturnGreen()
     {
         const string expressionCode = "return Color";
