@@ -5,6 +5,258 @@ namespace AltaSoft.Simpra.Tests;
 public class SimpraExpressionTests
 {
     [Fact]
+    public void ExpressionListOfList_Comparison_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return ListOfList[2][2] is 4
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"],
+            ListOfList = [[1, 2], [3, 4]]
+        };
+
+        var result = simpra.Execute<bool, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.True(result);
+    }
+    [Fact]
+    public void ListOfList_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return ListOfList 
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"],
+            ListOfList = [[1, 2], [3, 4]]
+        };
+
+        var result = simpra.Execute<List<List<int>>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(4, result[1][1]);
+    }
+    [Fact]
+    public void GetComplexObject_ShouldReturnCorrectly()
+    {
+        const string expressionCode = "return Customer";
+
+        var simpra = new Simpra();
+        var model = GetTestModel(); // Model is irrelevant here
+
+        var result = simpra.Execute<Customer, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(1, result.Id);
+    }
+
+    [Fact]
+    public void EnumerableOfIntegers_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return IntegerEnumerable
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"],
+            IntegerEnumerable = [1, 2, 3],
+        };
+
+        var result = simpra.Execute<IEnumerable<int>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(2, result.ToList()[1]);
+    }
+
+    [Fact]
+    public void ArrayOfIntegers_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return IntegerArray
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"],
+            IntegerArray = [1, 2, 3],
+        };
+
+        var result = simpra.Execute<int[], ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(2, result[1]);
+    }
+
+    [Fact]
+    public void ListOfComplexObjects_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return ComplexList
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"],
+            ComplexList = [
+                new Customer { Id = 1, Status = 1 },
+                new Customer { Id = 2, Status = 2 }
+            ]
+        };
+
+        var result = simpra.Execute<List<Customer>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(2, result[1].Id);
+    }
+
+    [Fact]
+    public void ExpressionStringListEqualsValue_ShouldReturnCorrectValues()
+    {
+        const string expressionCode =
+            """
+            return StringList[1] is 'test'
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"]
+        };
+
+        var result = simpra.Execute<bool, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void StringList_ShouldReturnCorrectValues()
+    {
+        const string expressionCode =
+            """
+            return StringList
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"]
+        };
+
+        var result = simpra.Execute<List<string>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal("test2", result[1]);
+    }
+
+    [Fact]
+    public void EnumList_ShouldReturnCorrectValues()
+    {
+        const string expressionCode =
+            """
+            return EnumList
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"]
+        };
+
+        var result = simpra.Execute<List<Color>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(Color.Green, result[1]);
+    }
+
+    [Fact]
+    public void IntegerList_ShouldReturnCorrectValues()
+    {
+        const string expressionCode =
+            """
+            return IntegerList
+            """;
+
+        var simpra = new Simpra();
+        var model = new ListModel
+        {
+            EnumList = [Color.Blue, Color.Green],
+            IntegerList = [1, 2, 3],
+            StringList = ["test", "test2"]
+        };
+
+        var result = simpra.Execute<List<int>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(2, result[1]);
+    }
+
+    [Fact]
+    public void Execute_ShouldReturnListOfComplexObject()
+    {
+        const string expressionCode =
+            """
+            return Transfer.RegulatoryReporting
+            """;
+
+        var simpra = new Simpra();
+        var model = Iso20022TransferModel.CreateForCountry("FR");
+
+        var result = simpra.Execute<List<RegulatoryReporting>, Iso20022TransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("FR", result[0].Authority.Country);
+    }
+
+    [Fact]
+    public void Execute_ShouldReturnComplexObject_WhenAccessedViaIndex()
+    {
+        const string expressionCode =
+            """
+            return Transfer.RegulatoryReporting[1]
+            """;
+
+        var simpra = new Simpra();
+        var model = Iso20022TransferModel.CreateForCountry("FR");
+
+        var result = simpra.Execute<RegulatoryReporting, Iso20022TransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("FR", result.Authority.Country);
+    }
+
+    [Fact]
+    public void Execute_ShouldReturnTrue_WhenAuthorityCountryIsFR()
+    {
+        const string expressionCode =
+            """
+            return Transfer.RegulatoryReporting[1].Authority.Country is 'FR'
+            """;
+
+        var simpra = new Simpra();
+        var model = Iso20022TransferModel.CreateForCountry("FR");
+
+        var result = simpra.Execute<bool, Iso20022TransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.True(result);
+    }
+
+    [Fact]
     public void Expression_Should_ReturnFalse_When_IndexIsOutOfRangeAndValueCompared()
     {
         const string expressionCode =

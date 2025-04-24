@@ -139,6 +139,15 @@ internal partial class SimpraParserVisitor<TResult, TModel>
             : Expression.Call(instance, method, arguments);
     }
 
+    private static MethodCallExpression CallBuiltinPropertyAccess(Expression instance, string propertyName, ParserRuleContext context)
+    {
+        var method = instance.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetMethod;
+
+        return method is null
+            ? throw new SimpraException(context, $"Property '{instance.Type.Name}.{propertyName} {{get}} not found")
+            : Expression.Call(instance, method);
+    }
+
     private static MethodCallExpression CallBuiltinStaticGenericMethod(Type type, string methodName, Type[] genericTypes, Expression[] arguments, ParserRuleContext context)
     {
         var argTypes = Array.ConvertAll(arguments, x => x.Type);
@@ -402,7 +411,67 @@ internal partial class SimpraParserVisitor<TResult, TModel>
             expr = CallBuiltinStaticGenericMethod(typeof(SimpraString), "ToEnum", [targetType], [expr], context);
         }
 
-        return Expression.Convert(expr, targetType);
+        if (!expr.Type.IsGenericType)
+            return Expression.Convert(expr, targetType);
+
+        var genericTypeDefinition = expr.Type.GetGenericTypeDefinition();
+        var isSimpraObject = genericTypeDefinition == typeof(SimpraInteropObject<>);
+        var isSimpraList = genericTypeDefinition == typeof(SimpraList<,>);
+
+        if (!isSimpraList && !isSimpraObject)
+            return Expression.Convert(expr, targetType);
+
+        expr = CallBuiltinPropertyAccess(expr, nameof(ISimpraType<object>.Value), context);
+
+        if (isSimpraObject)
+        {
+            return ConvertToType(expr, targetType, context);
+        }
+
+        //simpraList
+
+        var listTType = expr.Type.GetGenericArguments()[0];
+
+        Type underlyingTargetType;
+        if (targetType.IsGenericType)
+        {
+            underlyingTargetType = targetType.GetGenericArguments()[0];
+        }
+        else if (targetType.IsArray)
+        {
+            underlyingTargetType = targetType.GetElementType()!;
+
+        }
+        else
+        {
+            throw new InvalidOperationException($"Unsupported target type: {targetType.FullName}. Expected a generic type or an array.");
+        }
+
+        expr = CallConvertAllMethodOnList(expr, listTType, underlyingTargetType, context);
+
+        if (targetType.IsArray)
+        {
+            expr = CallBuiltinInstanceMethod(expr, nameof(List<object>.ToArray), [], context);
+        }
+
+        return ConvertToType(expr, targetType, context);
+
+    }
+    private static Expression CallConvertAllMethodOnList(Expression simpraListExpr, Type listTType, Type convertTo, ParserRuleContext context)
+    {
+        var param = Expression.Parameter(listTType, "x");
+
+        var delegateType = typeof(Converter<,>).MakeGenericType(listTType, convertTo);
+
+        var lambda = Expression.Lambda(delegateType, ConvertToType(param, convertTo, context), param);
+
+        // Get ConvertAll method
+        var convertAllMethod = simpraListExpr.Type
+            .GetMethod(nameof(List<object>.ConvertAll), BindingFlags.Public | BindingFlags.Instance)!
+            .MakeGenericMethod(convertTo);
+
+        simpraListExpr = Expression.Call(simpraListExpr, convertAllMethod, lambda);
+        return simpraListExpr;
     }
 
     private static NewExpression NewSimpraList(IEnumerable<Expression> arrayElements, ParserRuleContext context)
