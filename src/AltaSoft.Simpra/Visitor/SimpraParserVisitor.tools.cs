@@ -408,7 +408,10 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         if (expr.Type == typeof(SimpraString) && targetType.IsEnum())
         {
-            expr = CallBuiltinStaticGenericMethod(typeof(SimpraString), "ToEnum", [targetType], [expr], context);
+            if (targetType.IsNullableT())
+                expr = CallBuiltinStaticGenericMethod(typeof(SimpraString), nameof(SimpraString.ToNullableEnum), [targetType], [expr], context);
+            else
+                expr = CallBuiltinStaticGenericMethod(typeof(SimpraString), nameof(SimpraString.ToEnum), [targetType], [expr], context);
         }
 
         if (!expr.Type.IsGenericType)
@@ -431,21 +434,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         //simpraList
 
         var listTType = expr.Type.GetGenericArguments()[0];
-
-        Type underlyingTargetType;
-        if (targetType.IsGenericType)
-        {
-            underlyingTargetType = targetType.GetGenericArguments()[0];
-        }
-        else if (targetType.IsArray)
-        {
-            underlyingTargetType = targetType.GetElementType()!;
-
-        }
-        else
-        {
-            throw new InvalidOperationException($"Unsupported target type: {targetType.FullName}. Expected a generic type or an array.");
-        }
+        var underlyingTargetType = targetType.GetEnumerationElementType(context);
 
         expr = CallConvertAllMethodOnList(expr, listTType, underlyingTargetType, context);
 
@@ -502,7 +491,9 @@ internal partial class SimpraParserVisitor<TResult, TModel>
             throw new InvalidOperationException("Enumeration elements must implement IEnumerable<T>");
 
         var arrayElementType = arrayElements.Type.GetEnumerationElementType(context);
-        var tSimpraType = GetCorrespondingSimpraType(arrayElementType, true, context);
+        var domainType = arrayElementType.GetUnderlyingDomainPrimitiveType();
+
+        var tSimpraType = GetCorrespondingSimpraType(domainType ?? arrayElementType, true, context);
 
         var simpraListType = typeof(SimpraList<,>).MakeGenericType(tSimpraType, tSimpraType.GetSimpraTypeNetType());
         var ctorParamType = typeof(IEnumerable<>).MakeGenericType(tSimpraType);

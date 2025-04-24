@@ -178,11 +178,14 @@ internal static class UtilsExt
                type == typeof(TimeOnly);
 
     /// <summary>
-    /// Determines whether the specified type is an enumeration type.
+    /// Determines whether the specified type is an enumeration type. or Nullable enumeration type
     /// </summary>
     /// <param name="type">The type to check.</param>
     /// <returns><c>true</c> if the specified type is an enumeration type; otherwise, <c>false</c>.</returns>
-    public static bool IsEnum(this Type type) => type.IsEnum;
+    public static bool IsEnum(this Type type)
+    {
+        return type.IsEnum || (type.IsNullableT(out var t) && t.IsEnum);
+    }
 
     ///// <summary>
     ///// Determines whether the specified type is a domain primitive.

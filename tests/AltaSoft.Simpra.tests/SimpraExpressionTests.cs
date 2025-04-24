@@ -5,6 +5,73 @@ namespace AltaSoft.Simpra.Tests;
 public class SimpraExpressionTests
 {
     [Fact]
+    public void Expression_ReturnNullableEnum_ReturnValueMustBeCorrect()
+    {
+        const string expressionCode =
+            """
+            return NullableEnum
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.NullableEnum = Color.Green;
+        var result = simpra.Execute<Color?, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.NotNull(result);
+
+        model.NullableEnum = null;
+        result = simpra.Execute<Color?, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void Expression_ShouldCompareNullableEnum_ReturnValueMustBeCorrect()
+    {
+        const string expressionCode =
+            """
+            return NullableEnum is 'Green'
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.NullableEnum = Color.Green;
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void Expression_NestedDomainPrimitiveType_ShouldReturnCorrectly()
+    {
+        const string expressionCode =
+            """
+            return Transfer.RegulatoryReporting[1].Details[1].Information[1]
+            """;
+
+        var simpra = new Simpra();
+        var model = Iso20022TransferModel.CreateForInformation();
+
+        var result = simpra.Execute<Max35Text, Iso20022TransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public void Expression_NestedDomainPrimitiveType_ShouldCompareCorrectly()
+    {
+        const string expressionCode =
+            """
+            return Transfer.RegulatoryReporting[1].Details[1].Information[1] is 'Information1'
+            """;
+
+        var simpra = new Simpra();
+        var model = Iso20022TransferModel.CreateForInformation();
+
+        var result = simpra.Execute<bool, Iso20022TransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.True(result);
+    }
+
+    [Fact]
     public void ExpressionListOfList_Comparison_ShouldReturnCorrectly()
     {
         const string expressionCode =
@@ -1368,6 +1435,18 @@ public class SimpraExpressionTests
         Assert.Equal(15, model.Transfer!.Amount);
         Assert.Equal("GBP", model.Transfer.Currency);
         Assert.False(result);
+    }
+
+    [Fact]
+    public void ExecuteWitNullableEnum_ShouldReturnValue()
+    {
+        const string expressionCode = "return Nint1";
+
+        var simpra = new Simpra();
+        var model = GetTestModel(); // Model is irrelevant here
+        model.Nint1 = 1;
+        var result = simpra.Execute<int?, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(1, result);
     }
 
     [Fact]

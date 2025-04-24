@@ -21,6 +21,7 @@ public class TestModel
     public Color Color { get; set; } = Color.Green;
     public ColorX ColorX { get; set; } = ColorX.Green;
     public ColorM ColorM { get; set; } = ColorM.Green;
+    public Color? NullableEnum { get; set; }
     public CustomerId CustomerId { get; set; } = 11;
     public int? Nint1 { get; set; }
     public short Nint2 { get; set; } = 20;
@@ -33,7 +34,7 @@ public class TestModel
 
 }
 
-public class Iso20022TransferModel
+public sealed class Iso20022TransferModel
 {
     public required TransferAd Transfer { get; set; }
 
@@ -43,7 +44,33 @@ public class Iso20022TransferModel
         {
             Transfer = new TransferAd
             {
-                RegulatoryReporting = [new() { Authority = new() { Country = country } }]
+                RegulatoryReporting = [
+                    new()
+                    {
+                        Authority = new() { Country = country },
+                        Details= null
+                    }]
+            }
+        };
+    }
+    public static Iso20022TransferModel CreateForInformation()
+    {
+        return new Iso20022TransferModel
+        {
+            Transfer = new TransferAd
+            {
+                RegulatoryReporting = [
+                    new()
+                    {
+                        Authority = new() { Country = "US" },
+                        Details =[new StructuredRegulatoryReporting3
+                        {
+                            Information = [
+                                new Max35Text("Information1"),
+                                new Max35Text("Information2"),
+                                new Max35Text("Information3")]
+                        }]
+                    }]
             }
         };
     }
@@ -56,8 +83,13 @@ public class TransferAd
 public class RegulatoryReporting
 {
     public required Authority Authority { get; set; }
+    public required List<StructuredRegulatoryReporting3>? Details { get; set; }
 }
 
+public sealed class StructuredRegulatoryReporting3
+{
+    public required Max35Text[] Information { get; set; }
+}
 public class Authority
 {
     public required string Country { get; set; }
