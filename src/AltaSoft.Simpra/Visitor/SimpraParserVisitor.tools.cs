@@ -227,7 +227,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     private static MethodInfo? FindBestMatch(Type targetType, string methodName, Type[] argTypes, out bool matchWithToken)
     {
         matchWithToken = false;
-        const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+        const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy;
 
         var asyncMethodName = methodName + "Async";
 
