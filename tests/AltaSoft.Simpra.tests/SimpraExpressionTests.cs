@@ -5,6 +5,37 @@ namespace AltaSoft.Simpra.Tests;
 public class SimpraExpressionTests
 {
     [Fact]
+    public void ModelWithInheritedClassProperties_ShouldFindPropertyCorrectly()
+    {
+        const string expressionCode =
+            """
+            return Color
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Color = Color.Blue;
+        var result = simpra.Execute<Color, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(Color.Blue, result);
+
+    }
+
+    [Fact]
+    public void ModelWithInheritedInterfaceProperties_ShouldFindPropertyCorrectly()
+    {
+        const string expressionCode =
+            """
+            return Customer.Id
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<int, ITransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(1, result);
+
+    }
+
+    [Fact]
     public void Expression_ReturnNullableEnum_ReturnValueMustBeCorrect()
     {
         const string expressionCode =
