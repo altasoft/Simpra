@@ -232,9 +232,23 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         var asyncMethodName = methodName + "Async";
 
         // Get all methods matching the method name
-        var methods = targetType.GetMethods(bindingFlags)
-            .Where(m => m.Name == methodName || m.Name == asyncMethodName)
-            .ToList();
+        IEnumerable<MethodInfo> methods;
+
+        if (targetType.IsInterface)
+        {
+            // Include methods from the interface and all inherited interfaces
+            methods = targetType
+                .GetInterfaces()
+                .Append(targetType)
+                .SelectMany(i => i.GetMethods(bindingFlags));
+        }
+        else
+        {
+            // For class or struct types
+            methods = targetType.GetMethods(bindingFlags);
+        }
+
+        methods = methods.Where(m => m.Name == methodName || m.Name == asyncMethodName);
 
         // Track the best match and its score
         MethodInfo? bestMatch = null;
