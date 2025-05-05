@@ -4,6 +4,51 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraExpressionTests
 {
+
+    [Fact]
+    public void CallBaseStaticFunctionFromSimpra_ShouldReturnCorrectValue()
+    {
+        const string expressionCode =
+            """
+            return CallBaseStaticMethod()
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("BaseStaticMethod", result);
+
+    }
+    [Fact]
+    public void CallBaseFunctionFromSimpra_ShouldReturnCorrectValue()
+    {
+        const string expressionCode =
+            """
+            return CallBaseMethod()
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("BaseMethod", result);
+
+    }
+
+    [Fact]
+    public void CallFunctionFromSimpra()
+    {
+        const string expressionCode =
+            """
+            return ListSomeCountries('GE')
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<List<string>, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.True(result.SequenceEqual(["RU", "BE", "GE"]));
+
+    }
+
     [Fact]
     public void ModelWithInheritedClassProperties_ShouldFindPropertyCorrectly()
     {
@@ -1529,12 +1574,17 @@ public class SimpraExpressionTests
         };
     }
 
-    public class TestFunctions
+    public class BaseFunctions
+    {
+        public static string CallBaseStaticMethod() => "BaseStaticMethod";
+        public static string CallBaseMethod() => "BaseMethod";
+    }
+    public class TestFunctions : BaseFunctions
     {
         // ReSharper disable UnusedMember.Global
         public static string[] ListSomeCountries(string key)
         {
-            return ["RU", "BE"];
+            return ["RU", "BE", key];
         }
 
         public static int[] ListOfCustomerIds(string key)
