@@ -8,6 +8,7 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraMetaDataTest
 {
+
     [Fact]
     public void GetTypeModel_Should_ReturnNotNull_ForValidModelType()
     {

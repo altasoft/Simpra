@@ -11,14 +11,26 @@ public class ListModel
     public int[]? IntegerArray { get; set; }
     public IEnumerable<int> IntegerEnumerable { get; set; } = [];
 }
+public interface ICustomerModel
+{
+    public Customer Customer { get; set; }
+}
+public interface ITransferModel : ICustomerModel
+{
+    public Transfer? Transfer { get; set; }
 
-public class TestModel
+}
+
+public abstract class BaseModel
+{
+    public Color Color { get; set; } = Color.Green;
+}
+public class TestModel : BaseModel, ITransferModel
 {
     public required Transfer? Transfer { get; set; }
     public required Customer Customer { get; set; }
     public required string Remittance { get; set; }
 
-    public Color Color { get; set; } = Color.Green;
     public ColorX ColorX { get; set; } = ColorX.Green;
     public ColorM ColorM { get; set; } = ColorM.Green;
     public Color? NullableEnum { get; set; }

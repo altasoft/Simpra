@@ -335,19 +335,32 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     private static MemberExpression? GetPropertyOrConstant(Type targetType, Expression instance, string name)
     {
         var property = targetType.GetProperty(name);
+
         if (property is null)
         {
-            // Try const
-            var constField = targetType
-                .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .FirstOrDefault(f => f.Name == name && f is { IsLiteral: true, IsInitOnly: false });
-
-            if (constField is not null)
+            if (!targetType.IsInterface)
             {
-                return Expression.Field(null, constField);
+                // Try to find a public constant field (literal, not readonly)
+                var constField = targetType
+                    .GetField(name, BindingFlags.Public | BindingFlags.Static);
+
+                if (constField is { IsLiteral: true, IsInitOnly: false })
+                {
+                    return Expression.Field(null, constField);
+                }
+
+                return null;
             }
 
-            return null;
+            // Handle interfaces: search across interface and its base interfaces
+            property = targetType
+                .GetInterfaces()
+                .Append(targetType) // include the interface itself
+                .SelectMany(i => i.GetProperties())
+                .FirstOrDefault(p => p.Name == name);
+
+            if (property is null)
+                return null;
         }
 
         var getter = property.GetGetMethod();
@@ -356,6 +369,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         if (getter.IsStatic) // Static property
             return Expression.Property(null, property);
+
         return Expression.Property(instance, property);
     }
 
