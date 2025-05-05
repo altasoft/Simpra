@@ -4,6 +4,35 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraExpressionTests
 {
+    [Fact]
+    public void CallInterfaceFunctionFromSimpra_ShouldReturnCorrectValue()
+    {
+        const string expressionCode =
+            """
+            return Upper('test')
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("TEST", result);
+
+    }
+
+    [Fact]
+    public void CallBaseInterfaceFunctionFromSimpra_ShouldReturnCorrectValue()
+    {
+        const string expressionCode =
+            """
+            return Lower('TEST')
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("test", result);
+
+    }
 
     [Fact]
     public void CallBaseStaticFunctionFromSimpra_ShouldReturnCorrectValue()
@@ -1579,7 +1608,19 @@ public class SimpraExpressionTests
         public static string CallBaseStaticMethod() => "BaseStaticMethod";
         public static string CallBaseMethod() => "BaseMethod";
     }
-    public class TestFunctions : BaseFunctions
+    public interface IFunctions : IBaseFunctions
+    {
+        string Upper(string str);
+
+    }
+
+    public interface IBaseFunctions
+    {
+        string Lower(string str);
+
+    }
+
+    public class TestFunctions : BaseFunctions, IFunctions
     {
         // ReSharper disable UnusedMember.Global
         public static string[] ListSomeCountries(string key)
