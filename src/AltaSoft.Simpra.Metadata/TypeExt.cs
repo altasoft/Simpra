@@ -128,7 +128,7 @@ internal static class TypeExt
             return MapToPrefixedPropertyModels(collectionProp, name);
         }
 
-        if (type is { IsGenericType: true, GenericTypeArguments: [_] } && typeof(IEnumerable).IsAssignableFrom(type))
+        if (type is { IsGenericType: true, GenericTypeArguments.Length: >= 1 } && typeof(IEnumerable).IsAssignableFrom(type))
         {
             var elementType = type.GetGenericArguments()[0];
 
