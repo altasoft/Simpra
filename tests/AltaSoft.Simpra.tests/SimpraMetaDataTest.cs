@@ -28,6 +28,7 @@ public class SimpraMetaDataTest
         Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyClass.Base));
         Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyChildClass.Country));
         Assert.Contains(typeModel.Properties, p => p.Name == $"{nameof(MyChildClass.Countries)}[]");
+        Assert.Contains(typeModel.Properties, p => p.Name == $"{nameof(MyChildClass.Dictionary)}[]");
         Assert.Contains(typeModel.Properties, p => p.Name == "CollectionClass1[].CollectionMyClasses[].Base");
         Assert.Contains(typeModel.Functions, f => f.Name == nameof(MyChildClass.Child));
         Assert.Contains(typeModel.Functions, f => f.Name == nameof(MyClass.Father));
@@ -77,6 +78,7 @@ public class MyChildClass : MyClass
     public MyClass1[] CollectionClass1 { get; set; }
     public CountryCode[] Countries { get; set; }
     public CountryCode Country { get; set; }
+    public Dictionary<int, int> Dictionary { get; set; }
 
     public void Child()
     {
