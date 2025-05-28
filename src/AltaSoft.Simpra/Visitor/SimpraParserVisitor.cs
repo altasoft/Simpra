@@ -263,6 +263,14 @@ internal partial class SimpraParserVisitor<TResult, TModel>
             objectType = left.Type;
         }
 
+        // Handle IDictionary<TKey, TValue> (including Dictionary<,>)
+        var isDictionary = objectType.IsIReadOnlyDictionaryT();
+
+        if (isDictionary)
+        {
+            return HandleDictionaryIndexAccess(context, objectType, index, left);
+        }
+
         // Handle indexable types (e.g., List<T>)
         var defaultIndexer = objectType
             .GetProperties()
@@ -551,5 +559,22 @@ internal partial class SimpraParserVisitor<TResult, TModel>
     public Expression VisitArray(SimpraParser.ArrayContext context)
     {
         return NewSimpraList(context.exp().Select(Visit), context);
+    }
+
+    private static Expression HandleDictionaryIndexAccess(SimpraParser.IndexAccessContext context, Type objectType, Expression index, Expression left)
+    {
+        var keyType = objectType.GetGenericArguments()[0];
+        var valueType = objectType.GetGenericArguments()[1];
+        var tryGetValueMethod = objectType.GetMethod("TryGetValue", [keyType, valueType.MakeByRefType()])!;
+
+        var keyExpr = index.Type != keyType ? Expression.Convert(index, keyType) : index;
+        var valueVar = Expression.Variable(valueType, "dictValue");
+
+        var tryGetValueCall = Expression.Call(left, tryGetValueMethod, keyExpr, valueVar);
+
+        var defaultValue = Expression.Default(valueType);
+        var block = Expression.Block([valueVar], Expression.Condition(tryGetValueCall, valueVar, defaultValue));
+
+        return ConvertToSimpraType(block, false, context);
     }
 }
