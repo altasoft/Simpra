@@ -4,6 +4,60 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraExpressionTests
 {
+
+    [Fact]
+    public void CallGetValueFromDictionaryWhenKeyDoesNotExist_ShouldReturnDefault2()
+    {
+        const string expressionCode =
+            """
+            return DictionaryOfObjects['test'].Id
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.DictionaryOfObjects = new Dictionary<string, Customer> { { "Georgia", new Customer
+            {
+            Id = 1,
+            Status = 10
+        }} };
+
+        var result = simpra.Execute<int, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(0, result);
+
+    }
+
+    [Fact]
+    public void CallGetValueFromDictionaryWhenKeyDoesNotExist_ShouldReturnDefault()
+    {
+        const string expressionCode =
+            """
+            return Countries['test'] is 'Test'
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Countries = new Dictionary<string, string> { { "Georgia", "Test" } };
+        var result = simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.False(result);
+
+    }
+
+    [Fact]
+    public void CallGetValueFromDictionaryWhenKeyExist_ShouldReturnValue()
+    {
+        const string expressionCode =
+            """
+            return Countries['Georgia'] is 'Test'
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Countries = new Dictionary<string, string> { { "Georgia", "Test" } };
+        var result = simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.True(result);
+
+    }
+
     [Fact]
     public void CallInterfaceFunctionFromSimpra_ShouldReturnCorrectValue()
     {

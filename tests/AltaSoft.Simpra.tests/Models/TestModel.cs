@@ -30,6 +30,9 @@ public class TestModel : BaseModel, ITransferModel
     public required Transfer? Transfer { get; set; }
     public required Customer Customer { get; set; }
     public required string Remittance { get; set; }
+    public Dictionary<string, string>? Countries { get; set; }
+
+    public Dictionary<string, Customer>? DictionaryOfObjects { get; set; }
 
     public ColorX ColorX { get; set; } = ColorX.Green;
     public ColorM ColorM { get; set; } = ColorM.Green;
