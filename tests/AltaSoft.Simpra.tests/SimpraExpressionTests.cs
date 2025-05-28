@@ -6,7 +6,7 @@ public class SimpraExpressionTests
 {
 
     [Fact]
-    public void CallGetValueFromDictionaryWhenKeyDoesNotExist_ShouldReturnDefault2()
+    public void DictionaryIndexer_MissingKey_ReturnsDefaultValueForProperty()
     {
         const string expressionCode =
             """
