@@ -10,7 +10,7 @@ options {
 @namespace { AltaSoft.Simpra.ANTLR }
 
 // Root rule
-program: Main = block EOF | Expr = exp;
+program: Main = block EOF | Expr = exp EOF;
 
 objectref:
 	Identifier = IDENTIFIER										# Identifier
