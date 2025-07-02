@@ -21,6 +21,9 @@
 
 using System;
 using System.IO;
+using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
@@ -133,7 +136,7 @@ internal partial class SimpraParser : Parser {
 		ProgramContext _localctx = new ProgramContext(Context, State);
 		EnterRule(_localctx, 0, RULE_program);
 		try {
-			State = 18;
+			State = 20;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,0,Context) ) {
 			case 1:
@@ -150,6 +153,8 @@ internal partial class SimpraParser : Parser {
 				{
 				State = 17;
 				_localctx.Expr = exp(0);
+				State = 18;
+				Match(Eof);
 				}
 				break;
 			}
@@ -304,7 +309,7 @@ internal partial class SimpraParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 35;
+			State = 37;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,3,Context) ) {
 			case 1:
@@ -313,7 +318,7 @@ internal partial class SimpraParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 21;
+				State = 23;
 				((IdentifierContext)_localctx).Identifier = Match(IDENTIFIER);
 				}
 				break;
@@ -322,43 +327,43 @@ internal partial class SimpraParser : Parser {
 				_localctx = new FunctionCallContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 22;
+				State = 24;
 				((FunctionCallContext)_localctx).FunctionName = Match(IDENTIFIER);
-				State = 23;
-				Match(LPAREN);
 				State = 25;
+				Match(LPAREN);
+				State = 27;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 4855546461030520L) != 0)) {
 					{
-					State = 24;
+					State = 26;
 					exp(0);
 					}
 				}
 
-				State = 31;
+				State = 33;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					State = 27;
+					State = 29;
 					Match(COMMA);
-					State = 28;
+					State = 30;
 					exp(0);
 					}
 					}
-					State = 33;
+					State = 35;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 				}
-				State = 34;
+				State = 36;
 				Match(RPAREN);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 47;
+			State = 49;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,5,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
@@ -367,7 +372,7 @@ internal partial class SimpraParser : Parser {
 						TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 45;
+					State = 47;
 					ErrorHandler.Sync(this);
 					switch ( Interpreter.AdaptivePredict(TokenStream,4,Context) ) {
 					case 1:
@@ -375,12 +380,12 @@ internal partial class SimpraParser : Parser {
 						_localctx = new MemberAccessContext(new ObjectrefContext(_parentctx, _parentState));
 						((MemberAccessContext)_localctx).Object = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_objectref);
-						State = 37;
+						State = 39;
 						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
 						{
-						State = 38;
+						State = 40;
 						Match(DOT);
-						State = 39;
+						State = 41;
 						((MemberAccessContext)_localctx).PropertyName = Match(IDENTIFIER);
 						}
 						}
@@ -390,14 +395,14 @@ internal partial class SimpraParser : Parser {
 						_localctx = new IndexAccessContext(new ObjectrefContext(_parentctx, _parentState));
 						((IndexAccessContext)_localctx).Object = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_objectref);
-						State = 40;
+						State = 42;
 						if (!(Precpred(Context, 1))) throw new FailedPredicateException(this, "Precpred(Context, 1)");
 						{
-						State = 41;
-						Match(LBRACK);
-						State = 42;
-						((IndexAccessContext)_localctx).Index = exp(0);
 						State = 43;
+						Match(LBRACK);
+						State = 44;
+						((IndexAccessContext)_localctx).Index = exp(0);
+						State = 45;
 						Match(RBRACK);
 						}
 						}
@@ -405,7 +410,7 @@ internal partial class SimpraParser : Parser {
 					}
 					} 
 				}
-				State = 49;
+				State = 51;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,5,Context);
 			}
@@ -882,7 +887,7 @@ internal partial class SimpraParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 89;
+			State = 91;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case BOOLEAN:
@@ -891,7 +896,7 @@ internal partial class SimpraParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 51;
+				State = 53;
 				Match(BOOLEAN);
 				}
 				break;
@@ -900,7 +905,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new NumberContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 52;
+				State = 54;
 				Match(NUMBER);
 				}
 				break;
@@ -909,7 +914,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new CStringContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 53;
+				State = 55;
 				Match(CSTRING);
 				}
 				break;
@@ -918,7 +923,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new PascalStringContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 54;
+				State = 56;
 				Match(PASCALSTRING);
 				}
 				break;
@@ -927,35 +932,35 @@ internal partial class SimpraParser : Parser {
 				_localctx = new ArrayContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 55;
-				Match(LBRACK);
 				State = 57;
+				Match(LBRACK);
+				State = 59;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 4855546461030520L) != 0)) {
 					{
-					State = 56;
+					State = 58;
 					exp(0);
 					}
 				}
 
-				State = 63;
+				State = 65;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					State = 59;
+					State = 61;
 					Match(COMMA);
-					State = 60;
+					State = 62;
 					exp(0);
 					}
 					}
-					State = 65;
+					State = 67;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 				}
-				State = 66;
+				State = 68;
 				Match(RBRACK);
 				}
 				break;
@@ -964,7 +969,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new ObjectRefContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 67;
+				State = 69;
 				objectref(0);
 				}
 				break;
@@ -973,11 +978,11 @@ internal partial class SimpraParser : Parser {
 				_localctx = new ParenthesisContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 68;
-				Match(LPAREN);
-				State = 69;
-				((ParenthesisContext)_localctx).Expression = exp(0);
 				State = 70;
+				Match(LPAREN);
+				State = 71;
+				((ParenthesisContext)_localctx).Expression = exp(0);
+				State = 72;
 				Match(RPAREN);
 				}
 				break;
@@ -988,7 +993,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new UnaryContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 72;
+				State = 74;
 				((UnaryContext)_localctx).Operator = TokenStream.LT(1);
 				_la = TokenStream.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 103112769536L) != 0)) ) {
@@ -998,7 +1003,7 @@ internal partial class SimpraParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 73;
+				State = 75;
 				((UnaryContext)_localctx).Expression = exp(12);
 				}
 				break;
@@ -1007,35 +1012,35 @@ internal partial class SimpraParser : Parser {
 				_localctx = new WhenContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 74;
-				Match(WHEN);
-				State = 75;
-				((WhenContext)_localctx).Condition = exp(0);
 				State = 76;
-				Match(THEN);
+				Match(WHEN);
 				State = 77;
+				((WhenContext)_localctx).Condition = exp(0);
+				State = 78;
+				Match(THEN);
+				State = 79;
 				((WhenContext)_localctx).ExpressionTrue = exp(0);
-				State = 81;
+				State = 83;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				while (_la==WHEN) {
 					{
 					{
-					State = 78;
+					State = 80;
 					extraWhen();
 					}
 					}
-					State = 83;
+					State = 85;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 				}
 				{
-				State = 84;
+				State = 86;
 				Match(ELSE);
-				State = 85;
+				State = 87;
 				((WhenContext)_localctx).ExpressionFalse = exp(0);
 				}
-				State = 87;
+				State = 89;
 				Match(END);
 				}
 				break;
@@ -1043,7 +1048,7 @@ internal partial class SimpraParser : Parser {
 				throw new NoViableAltException(this);
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 129;
+			State = 131;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,11,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
@@ -1052,7 +1057,7 @@ internal partial class SimpraParser : Parser {
 						TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 127;
+					State = 129;
 					ErrorHandler.Sync(this);
 					switch ( Interpreter.AdaptivePredict(TokenStream,10,Context) ) {
 					case 1:
@@ -1060,9 +1065,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryContext(new ExpContext(_parentctx, _parentState));
 						((BinaryContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 91;
+						State = 93;
 						if (!(Precpred(Context, 10))) throw new FailedPredicateException(this, "Precpred(Context, 10)");
-						State = 92;
+						State = 94;
 						((BinaryContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 962072674304L) != 0)) ) {
@@ -1072,7 +1077,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 93;
+						State = 95;
 						((BinaryContext)_localctx).Right = exp(11);
 						}
 						break;
@@ -1081,9 +1086,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryContext(new ExpContext(_parentctx, _parentState));
 						((BinaryContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 94;
+						State = 96;
 						if (!(Precpred(Context, 9))) throw new FailedPredicateException(this, "Precpred(Context, 9)");
-						State = 95;
+						State = 97;
 						((BinaryContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !(_la==PLUS || _la==MINUS) ) {
@@ -1093,7 +1098,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 96;
+						State = 98;
 						((BinaryContext)_localctx).Right = exp(10);
 						}
 						break;
@@ -1102,9 +1107,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryContext(new ExpContext(_parentctx, _parentState));
 						((BinaryContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 97;
+						State = 99;
 						if (!(Precpred(Context, 8))) throw new FailedPredicateException(this, "Precpred(Context, 8)");
-						State = 98;
+						State = 100;
 						((BinaryContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !(_la==MIN || _la==MAX) ) {
@@ -1114,7 +1119,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 99;
+						State = 101;
 						((BinaryContext)_localctx).Right = exp(9);
 						}
 						break;
@@ -1123,9 +1128,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new ChainedComparisonContext(new ExpContext(_parentctx, _parentState));
 						((ChainedComparisonContext)_localctx).Expression = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 100;
+						State = 102;
 						if (!(Precpred(Context, 7))) throw new FailedPredicateException(this, "Precpred(Context, 7)");
-						State = 101;
+						State = 103;
 						((ChainedComparisonContext)_localctx).LeftOperator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16492674416640L) != 0)) ) {
@@ -1135,9 +1140,9 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 102;
+						State = 104;
 						((ChainedComparisonContext)_localctx).Left = exp(0);
-						State = 103;
+						State = 105;
 						_la = TokenStream.LA(1);
 						if ( !(_la==AND || _la==OR) ) {
 						ErrorHandler.RecoverInline(this);
@@ -1146,7 +1151,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 104;
+						State = 106;
 						((ChainedComparisonContext)_localctx).RightOperator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16492674416640L) != 0)) ) {
@@ -1156,7 +1161,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 105;
+						State = 107;
 						((ChainedComparisonContext)_localctx).Right = exp(8);
 						}
 						break;
@@ -1165,9 +1170,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new ComparisonContext(new ExpContext(_parentctx, _parentState));
 						((ComparisonContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 107;
+						State = 109;
 						if (!(Precpred(Context, 6))) throw new FailedPredicateException(this, "Precpred(Context, 6)");
-						State = 108;
+						State = 110;
 						((ComparisonContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16492674416640L) != 0)) ) {
@@ -1177,7 +1182,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 109;
+						State = 111;
 						((ComparisonContext)_localctx).Right = exp(7);
 						}
 						break;
@@ -1186,9 +1191,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryContext(new ExpContext(_parentctx, _parentState));
 						((BinaryContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 110;
+						State = 112;
 						if (!(Precpred(Context, 5))) throw new FailedPredicateException(this, "Precpred(Context, 5)");
-						State = 111;
+						State = 113;
 						((BinaryContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !(_la==IS || _la==IS_NOT) ) {
@@ -1198,7 +1203,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 112;
+						State = 114;
 						((BinaryContext)_localctx).Right = exp(6);
 						}
 						break;
@@ -1207,9 +1212,9 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryContext(new ExpContext(_parentctx, _parentState));
 						((BinaryContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 113;
+						State = 115;
 						if (!(Precpred(Context, 4))) throw new FailedPredicateException(this, "Precpred(Context, 4)");
-						State = 114;
+						State = 116;
 						((BinaryContext)_localctx).Operator = TokenStream.LT(1);
 						_la = TokenStream.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 838336512L) != 0)) ) {
@@ -1219,7 +1224,7 @@ internal partial class SimpraParser : Parser {
 							ErrorHandler.ReportMatch(this);
 						    Consume();
 						}
-						State = 115;
+						State = 117;
 						((BinaryContext)_localctx).Right = exp(5);
 						}
 						break;
@@ -1228,13 +1233,13 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryAndContext(new ExpContext(_parentctx, _parentState));
 						((BinaryAndContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 116;
+						State = 118;
 						if (!(Precpred(Context, 3))) throw new FailedPredicateException(this, "Precpred(Context, 3)");
 						{
-						State = 117;
+						State = 119;
 						Match(AND);
 						}
-						State = 118;
+						State = 120;
 						((BinaryAndContext)_localctx).Right = exp(4);
 						}
 						break;
@@ -1243,13 +1248,13 @@ internal partial class SimpraParser : Parser {
 						_localctx = new BinaryOrContext(new ExpContext(_parentctx, _parentState));
 						((BinaryOrContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 119;
+						State = 121;
 						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
 						{
-						State = 120;
+						State = 122;
 						Match(OR);
 						}
-						State = 121;
+						State = 123;
 						((BinaryOrContext)_localctx).Right = exp(3);
 						}
 						break;
@@ -1258,11 +1263,11 @@ internal partial class SimpraParser : Parser {
 						_localctx = new HasValueContext(new ExpContext(_parentctx, _parentState));
 						((HasValueContext)_localctx).Left = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 122;
-						if (!(Precpred(Context, 13))) throw new FailedPredicateException(this, "Precpred(Context, 13)");
-						State = 123;
-						Match(HAS);
 						State = 124;
+						if (!(Precpred(Context, 13))) throw new FailedPredicateException(this, "Precpred(Context, 13)");
+						State = 125;
+						Match(HAS);
+						State = 126;
 						Match(VALUE);
 						}
 						break;
@@ -1271,16 +1276,16 @@ internal partial class SimpraParser : Parser {
 						_localctx = new UnaryContext(new ExpContext(_parentctx, _parentState));
 						((UnaryContext)_localctx).Expression = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_exp);
-						State = 125;
+						State = 127;
 						if (!(Precpred(Context, 11))) throw new FailedPredicateException(this, "Precpred(Context, 11)");
-						State = 126;
+						State = 128;
 						((UnaryContext)_localctx).Operator = Match(PERCENT);
 						}
 						break;
 					}
 					} 
 				}
-				State = 131;
+				State = 133;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,11,Context);
 			}
@@ -1347,13 +1352,13 @@ internal partial class SimpraParser : Parser {
 			_localctx = new ExtraWhenExprContext(_localctx);
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 132;
-			Match(WHEN);
-			State = 133;
-			((ExtraWhenExprContext)_localctx).Condition = exp(0);
 			State = 134;
-			Match(THEN);
+			Match(WHEN);
 			State = 135;
+			((ExtraWhenExprContext)_localctx).Condition = exp(0);
+			State = 136;
+			Match(THEN);
+			State = 137;
 			((ExtraWhenExprContext)_localctx).ExpressionTrue = exp(0);
 			}
 		}
@@ -1415,19 +1420,19 @@ internal partial class SimpraParser : Parser {
 			_localctx = new StatementBlockContext(_localctx);
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 140;
+			State = 142;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,12,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					State = 137;
+					State = 139;
 					statement();
 					}
 					} 
 				}
-				State = 142;
+				State = 144;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,12,Context);
 			}
@@ -1677,20 +1682,20 @@ internal partial class SimpraParser : Parser {
 		int _la;
 		try {
 			int _alt;
-			State = 177;
+			State = 179;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,15,Context) ) {
 			case 1:
 				_localctx = new VariableDeclarationContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 143;
-				Match(LET);
-				State = 144;
-				((VariableDeclarationContext)_localctx).Name = Match(IDENTIFIER);
 				State = 145;
-				Match(EQ);
+				Match(LET);
 				State = 146;
+				((VariableDeclarationContext)_localctx).Name = Match(IDENTIFIER);
+				State = 147;
+				Match(EQ);
+				State = 148;
 				((VariableDeclarationContext)_localctx).Right = exp(0);
 				}
 				break;
@@ -1698,11 +1703,11 @@ internal partial class SimpraParser : Parser {
 				_localctx = new AssignmentContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 147;
-				((AssignmentContext)_localctx).Left = objectref(0);
-				State = 148;
-				Match(EQ);
 				State = 149;
+				((AssignmentContext)_localctx).Left = objectref(0);
+				State = 150;
+				Match(EQ);
+				State = 151;
 				((AssignmentContext)_localctx).Right = exp(0);
 				}
 				break;
@@ -1710,9 +1715,9 @@ internal partial class SimpraParser : Parser {
 				_localctx = new Return2Context(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 151;
+				State = 153;
 				Match(RETURN);
-				State = 152;
+				State = 154;
 				((Return2Context)_localctx).Value = exp(0);
 				}
 				break;
@@ -1720,43 +1725,43 @@ internal partial class SimpraParser : Parser {
 				_localctx = new IfElseStatementContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 153;
-				Match(IF);
-				State = 154;
-				((IfElseStatementContext)_localctx).Condition = exp(0);
 				State = 155;
-				Match(THEN);
+				Match(IF);
 				State = 156;
+				((IfElseStatementContext)_localctx).Condition = exp(0);
+				State = 157;
+				Match(THEN);
+				State = 158;
 				((IfElseStatementContext)_localctx).BlockTrue = block();
-				State = 160;
+				State = 162;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,13,Context);
 				while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1 ) {
 						{
 						{
-						State = 157;
+						State = 159;
 						extraIf();
 						}
 						} 
 					}
-					State = 162;
+					State = 164;
 					ErrorHandler.Sync(this);
 					_alt = Interpreter.AdaptivePredict(TokenStream,13,Context);
 				}
-				State = 165;
+				State = 167;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==ELSE) {
 					{
-					State = 163;
+					State = 165;
 					Match(ELSE);
-					State = 164;
+					State = 166;
 					((IfElseStatementContext)_localctx).BlockFalse = block();
 					}
 				}
 
-				State = 167;
+				State = 169;
 				Match(END);
 				}
 				break;
@@ -1764,9 +1769,9 @@ internal partial class SimpraParser : Parser {
 				_localctx = new CompoundAssignmentContext(_localctx);
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 169;
+				State = 171;
 				((CompoundAssignmentContext)_localctx).Left = exp(0);
-				State = 170;
+				State = 172;
 				((CompoundAssignmentContext)_localctx).Operator = TokenStream.LT(1);
 				_la = TokenStream.LA(1);
 				if ( !(_la==PLUS_EQ || _la==MINUS_EQ) ) {
@@ -1776,7 +1781,7 @@ internal partial class SimpraParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 171;
+				State = 173;
 				((CompoundAssignmentContext)_localctx).Right = exp(0);
 				}
 				break;
@@ -1784,7 +1789,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new LineCommentContext(_localctx);
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 173;
+				State = 175;
 				Match(COMMENT);
 				}
 				break;
@@ -1792,7 +1797,7 @@ internal partial class SimpraParser : Parser {
 				_localctx = new BlockCommentContext(_localctx);
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 174;
+				State = 176;
 				Match(BLOCK_COMMENT);
 				}
 				break;
@@ -1800,9 +1805,9 @@ internal partial class SimpraParser : Parser {
 				_localctx = new DirectiveContext(_localctx);
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 175;
+				State = 177;
 				((DirectiveContext)_localctx).Name = Match(DIRECTIVE);
-				State = 176;
+				State = 178;
 				((DirectiveContext)_localctx).OnOff = Match(ON_OFF);
 				}
 				break;
@@ -1871,23 +1876,23 @@ internal partial class SimpraParser : Parser {
 			_localctx = new ExtraIfExprContext(_localctx);
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 180;
+			State = 182;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==ELSE) {
 				{
-				State = 179;
+				State = 181;
 				Match(ELSE);
 				}
 			}
 
-			State = 182;
-			Match(IF);
-			State = 183;
-			((ExtraIfExprContext)_localctx).Condition = exp(0);
 			State = 184;
-			Match(THEN);
+			Match(IF);
 			State = 185;
+			((ExtraIfExprContext)_localctx).Condition = exp(0);
+			State = 186;
+			Match(THEN);
+			State = 187;
 			((ExtraIfExprContext)_localctx).BlockTrue = block();
 			}
 		}
@@ -1934,68 +1939,69 @@ internal partial class SimpraParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,54,188,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
-		1,0,1,0,1,0,3,0,19,8,0,1,1,1,1,1,1,1,1,1,1,3,1,26,8,1,1,1,1,1,5,1,30,8,
-		1,10,1,12,1,33,9,1,1,1,3,1,36,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,1,
-		46,8,1,10,1,12,1,49,9,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,58,8,2,1,2,1,2,
-		5,2,62,8,2,10,2,12,2,65,9,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
-		2,1,2,1,2,5,2,80,8,2,10,2,12,2,83,9,2,1,2,1,2,1,2,1,2,1,2,3,2,90,8,2,1,
-		2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
+		4,1,54,190,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,1,0,
+		1,0,1,0,1,0,1,0,1,0,3,0,21,8,0,1,1,1,1,1,1,1,1,1,1,3,1,28,8,1,1,1,1,1,
+		5,1,32,8,1,10,1,12,1,35,9,1,1,1,3,1,38,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		1,1,5,1,48,8,1,10,1,12,1,51,9,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,60,8,2,
+		1,2,1,2,5,2,64,8,2,10,2,12,2,67,9,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
+		2,1,2,1,2,1,2,1,2,5,2,82,8,2,10,2,12,2,85,9,2,1,2,1,2,1,2,1,2,1,2,3,2,
+		92,8,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
 		1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
-		2,5,2,128,8,2,10,2,12,2,131,9,2,1,3,1,3,1,3,1,3,1,3,1,4,5,4,139,8,4,10,
-		4,12,4,142,9,4,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,
-		1,5,5,5,159,8,5,10,5,12,5,162,9,5,1,5,1,5,3,5,166,8,5,1,5,1,5,1,5,1,5,
-		1,5,1,5,1,5,1,5,1,5,1,5,3,5,178,8,5,1,6,3,6,181,8,6,1,6,1,6,1,6,1,6,1,
-		6,1,6,0,2,2,4,7,0,2,4,6,8,10,12,0,9,2,0,25,25,35,36,1,0,37,39,1,0,35,36,
-		1,0,26,27,1,0,40,43,1,0,32,33,1,0,17,18,2,0,19,24,28,29,1,0,44,45,219,
-		0,18,1,0,0,0,2,35,1,0,0,0,4,89,1,0,0,0,6,132,1,0,0,0,8,140,1,0,0,0,10,
-		177,1,0,0,0,12,180,1,0,0,0,14,15,3,8,4,0,15,16,5,0,0,1,16,19,1,0,0,0,17,
-		19,3,4,2,0,18,14,1,0,0,0,18,17,1,0,0,0,19,1,1,0,0,0,20,21,6,1,-1,0,21,
-		36,5,52,0,0,22,23,5,52,0,0,23,25,5,46,0,0,24,26,3,4,2,0,25,24,1,0,0,0,
-		25,26,1,0,0,0,26,31,1,0,0,0,27,28,5,50,0,0,28,30,3,4,2,0,29,27,1,0,0,0,
-		30,33,1,0,0,0,31,29,1,0,0,0,31,32,1,0,0,0,32,34,1,0,0,0,33,31,1,0,0,0,
-		34,36,5,47,0,0,35,20,1,0,0,0,35,22,1,0,0,0,36,47,1,0,0,0,37,38,10,2,0,
-		0,38,39,5,51,0,0,39,46,5,52,0,0,40,41,10,1,0,0,41,42,5,48,0,0,42,43,3,
-		4,2,0,43,44,5,49,0,0,44,46,1,0,0,0,45,37,1,0,0,0,45,40,1,0,0,0,46,49,1,
-		0,0,0,47,45,1,0,0,0,47,48,1,0,0,0,48,3,1,0,0,0,49,47,1,0,0,0,50,51,6,2,
-		-1,0,51,90,5,3,0,0,52,90,5,4,0,0,53,90,5,6,0,0,54,90,5,5,0,0,55,57,5,48,
-		0,0,56,58,3,4,2,0,57,56,1,0,0,0,57,58,1,0,0,0,58,63,1,0,0,0,59,60,5,50,
-		0,0,60,62,3,4,2,0,61,59,1,0,0,0,62,65,1,0,0,0,63,61,1,0,0,0,63,64,1,0,
-		0,0,64,66,1,0,0,0,65,63,1,0,0,0,66,90,5,49,0,0,67,90,3,2,1,0,68,69,5,46,
-		0,0,69,70,3,4,2,0,70,71,5,47,0,0,71,90,1,0,0,0,72,73,7,0,0,0,73,90,3,4,
-		2,12,74,75,5,11,0,0,75,76,3,4,2,0,76,77,5,13,0,0,77,81,3,4,2,0,78,80,3,
-		6,3,0,79,78,1,0,0,0,80,83,1,0,0,0,81,79,1,0,0,0,81,82,1,0,0,0,82,84,1,
-		0,0,0,83,81,1,0,0,0,84,85,5,14,0,0,85,86,3,4,2,0,86,87,1,0,0,0,87,88,5,
-		15,0,0,88,90,1,0,0,0,89,50,1,0,0,0,89,52,1,0,0,0,89,53,1,0,0,0,89,54,1,
-		0,0,0,89,55,1,0,0,0,89,67,1,0,0,0,89,68,1,0,0,0,89,72,1,0,0,0,89,74,1,
-		0,0,0,90,129,1,0,0,0,91,92,10,10,0,0,92,93,7,1,0,0,93,128,3,4,2,11,94,
-		95,10,9,0,0,95,96,7,2,0,0,96,128,3,4,2,10,97,98,10,8,0,0,98,99,7,3,0,0,
-		99,128,3,4,2,9,100,101,10,7,0,0,101,102,7,4,0,0,102,103,3,4,2,0,103,104,
-		7,5,0,0,104,105,7,4,0,0,105,106,3,4,2,8,106,128,1,0,0,0,107,108,10,6,0,
-		0,108,109,7,4,0,0,109,128,3,4,2,7,110,111,10,5,0,0,111,112,7,6,0,0,112,
-		128,3,4,2,6,113,114,10,4,0,0,114,115,7,7,0,0,115,128,3,4,2,5,116,117,10,
-		3,0,0,117,118,5,32,0,0,118,128,3,4,2,4,119,120,10,2,0,0,120,121,5,33,0,
-		0,121,128,3,4,2,3,122,123,10,13,0,0,123,124,5,30,0,0,124,128,5,31,0,0,
-		125,126,10,11,0,0,126,128,5,7,0,0,127,91,1,0,0,0,127,94,1,0,0,0,127,97,
-		1,0,0,0,127,100,1,0,0,0,127,107,1,0,0,0,127,110,1,0,0,0,127,113,1,0,0,
-		0,127,116,1,0,0,0,127,119,1,0,0,0,127,122,1,0,0,0,127,125,1,0,0,0,128,
-		131,1,0,0,0,129,127,1,0,0,0,129,130,1,0,0,0,130,5,1,0,0,0,131,129,1,0,
-		0,0,132,133,5,11,0,0,133,134,3,4,2,0,134,135,5,13,0,0,135,136,3,4,2,0,
-		136,7,1,0,0,0,137,139,3,10,5,0,138,137,1,0,0,0,139,142,1,0,0,0,140,138,
-		1,0,0,0,140,141,1,0,0,0,141,9,1,0,0,0,142,140,1,0,0,0,143,144,5,10,0,0,
-		144,145,5,52,0,0,145,146,5,34,0,0,146,178,3,4,2,0,147,148,3,2,1,0,148,
-		149,5,34,0,0,149,150,3,4,2,0,150,178,1,0,0,0,151,152,5,16,0,0,152,178,
-		3,4,2,0,153,154,5,12,0,0,154,155,3,4,2,0,155,156,5,13,0,0,156,160,3,8,
-		4,0,157,159,3,12,6,0,158,157,1,0,0,0,159,162,1,0,0,0,160,158,1,0,0,0,160,
-		161,1,0,0,0,161,165,1,0,0,0,162,160,1,0,0,0,163,164,5,14,0,0,164,166,3,
-		8,4,0,165,163,1,0,0,0,165,166,1,0,0,0,166,167,1,0,0,0,167,168,5,15,0,0,
-		168,178,1,0,0,0,169,170,3,4,2,0,170,171,7,8,0,0,171,172,3,4,2,0,172,178,
-		1,0,0,0,173,178,5,1,0,0,174,178,5,2,0,0,175,176,5,53,0,0,176,178,5,8,0,
-		0,177,143,1,0,0,0,177,147,1,0,0,0,177,151,1,0,0,0,177,153,1,0,0,0,177,
-		169,1,0,0,0,177,173,1,0,0,0,177,174,1,0,0,0,177,175,1,0,0,0,178,11,1,0,
-		0,0,179,181,5,14,0,0,180,179,1,0,0,0,180,181,1,0,0,0,181,182,1,0,0,0,182,
-		183,5,12,0,0,183,184,3,4,2,0,184,185,5,13,0,0,185,186,3,8,4,0,186,13,1,
-		0,0,0,17,18,25,31,35,45,47,57,63,81,89,127,129,140,160,165,177,180
+		2,1,2,1,2,5,2,130,8,2,10,2,12,2,133,9,2,1,3,1,3,1,3,1,3,1,3,1,4,5,4,141,
+		8,4,10,4,12,4,144,9,4,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,
+		1,5,1,5,1,5,5,5,161,8,5,10,5,12,5,164,9,5,1,5,1,5,3,5,168,8,5,1,5,1,5,
+		1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,3,5,180,8,5,1,6,3,6,183,8,6,1,6,1,6,1,
+		6,1,6,1,6,1,6,0,2,2,4,7,0,2,4,6,8,10,12,0,9,2,0,25,25,35,36,1,0,37,39,
+		1,0,35,36,1,0,26,27,1,0,40,43,1,0,32,33,1,0,17,18,2,0,19,24,28,29,1,0,
+		44,45,221,0,20,1,0,0,0,2,37,1,0,0,0,4,91,1,0,0,0,6,134,1,0,0,0,8,142,1,
+		0,0,0,10,179,1,0,0,0,12,182,1,0,0,0,14,15,3,8,4,0,15,16,5,0,0,1,16,21,
+		1,0,0,0,17,18,3,4,2,0,18,19,5,0,0,1,19,21,1,0,0,0,20,14,1,0,0,0,20,17,
+		1,0,0,0,21,1,1,0,0,0,22,23,6,1,-1,0,23,38,5,52,0,0,24,25,5,52,0,0,25,27,
+		5,46,0,0,26,28,3,4,2,0,27,26,1,0,0,0,27,28,1,0,0,0,28,33,1,0,0,0,29,30,
+		5,50,0,0,30,32,3,4,2,0,31,29,1,0,0,0,32,35,1,0,0,0,33,31,1,0,0,0,33,34,
+		1,0,0,0,34,36,1,0,0,0,35,33,1,0,0,0,36,38,5,47,0,0,37,22,1,0,0,0,37,24,
+		1,0,0,0,38,49,1,0,0,0,39,40,10,2,0,0,40,41,5,51,0,0,41,48,5,52,0,0,42,
+		43,10,1,0,0,43,44,5,48,0,0,44,45,3,4,2,0,45,46,5,49,0,0,46,48,1,0,0,0,
+		47,39,1,0,0,0,47,42,1,0,0,0,48,51,1,0,0,0,49,47,1,0,0,0,49,50,1,0,0,0,
+		50,3,1,0,0,0,51,49,1,0,0,0,52,53,6,2,-1,0,53,92,5,3,0,0,54,92,5,4,0,0,
+		55,92,5,6,0,0,56,92,5,5,0,0,57,59,5,48,0,0,58,60,3,4,2,0,59,58,1,0,0,0,
+		59,60,1,0,0,0,60,65,1,0,0,0,61,62,5,50,0,0,62,64,3,4,2,0,63,61,1,0,0,0,
+		64,67,1,0,0,0,65,63,1,0,0,0,65,66,1,0,0,0,66,68,1,0,0,0,67,65,1,0,0,0,
+		68,92,5,49,0,0,69,92,3,2,1,0,70,71,5,46,0,0,71,72,3,4,2,0,72,73,5,47,0,
+		0,73,92,1,0,0,0,74,75,7,0,0,0,75,92,3,4,2,12,76,77,5,11,0,0,77,78,3,4,
+		2,0,78,79,5,13,0,0,79,83,3,4,2,0,80,82,3,6,3,0,81,80,1,0,0,0,82,85,1,0,
+		0,0,83,81,1,0,0,0,83,84,1,0,0,0,84,86,1,0,0,0,85,83,1,0,0,0,86,87,5,14,
+		0,0,87,88,3,4,2,0,88,89,1,0,0,0,89,90,5,15,0,0,90,92,1,0,0,0,91,52,1,0,
+		0,0,91,54,1,0,0,0,91,55,1,0,0,0,91,56,1,0,0,0,91,57,1,0,0,0,91,69,1,0,
+		0,0,91,70,1,0,0,0,91,74,1,0,0,0,91,76,1,0,0,0,92,131,1,0,0,0,93,94,10,
+		10,0,0,94,95,7,1,0,0,95,130,3,4,2,11,96,97,10,9,0,0,97,98,7,2,0,0,98,130,
+		3,4,2,10,99,100,10,8,0,0,100,101,7,3,0,0,101,130,3,4,2,9,102,103,10,7,
+		0,0,103,104,7,4,0,0,104,105,3,4,2,0,105,106,7,5,0,0,106,107,7,4,0,0,107,
+		108,3,4,2,8,108,130,1,0,0,0,109,110,10,6,0,0,110,111,7,4,0,0,111,130,3,
+		4,2,7,112,113,10,5,0,0,113,114,7,6,0,0,114,130,3,4,2,6,115,116,10,4,0,
+		0,116,117,7,7,0,0,117,130,3,4,2,5,118,119,10,3,0,0,119,120,5,32,0,0,120,
+		130,3,4,2,4,121,122,10,2,0,0,122,123,5,33,0,0,123,130,3,4,2,3,124,125,
+		10,13,0,0,125,126,5,30,0,0,126,130,5,31,0,0,127,128,10,11,0,0,128,130,
+		5,7,0,0,129,93,1,0,0,0,129,96,1,0,0,0,129,99,1,0,0,0,129,102,1,0,0,0,129,
+		109,1,0,0,0,129,112,1,0,0,0,129,115,1,0,0,0,129,118,1,0,0,0,129,121,1,
+		0,0,0,129,124,1,0,0,0,129,127,1,0,0,0,130,133,1,0,0,0,131,129,1,0,0,0,
+		131,132,1,0,0,0,132,5,1,0,0,0,133,131,1,0,0,0,134,135,5,11,0,0,135,136,
+		3,4,2,0,136,137,5,13,0,0,137,138,3,4,2,0,138,7,1,0,0,0,139,141,3,10,5,
+		0,140,139,1,0,0,0,141,144,1,0,0,0,142,140,1,0,0,0,142,143,1,0,0,0,143,
+		9,1,0,0,0,144,142,1,0,0,0,145,146,5,10,0,0,146,147,5,52,0,0,147,148,5,
+		34,0,0,148,180,3,4,2,0,149,150,3,2,1,0,150,151,5,34,0,0,151,152,3,4,2,
+		0,152,180,1,0,0,0,153,154,5,16,0,0,154,180,3,4,2,0,155,156,5,12,0,0,156,
+		157,3,4,2,0,157,158,5,13,0,0,158,162,3,8,4,0,159,161,3,12,6,0,160,159,
+		1,0,0,0,161,164,1,0,0,0,162,160,1,0,0,0,162,163,1,0,0,0,163,167,1,0,0,
+		0,164,162,1,0,0,0,165,166,5,14,0,0,166,168,3,8,4,0,167,165,1,0,0,0,167,
+		168,1,0,0,0,168,169,1,0,0,0,169,170,5,15,0,0,170,180,1,0,0,0,171,172,3,
+		4,2,0,172,173,7,8,0,0,173,174,3,4,2,0,174,180,1,0,0,0,175,180,5,1,0,0,
+		176,180,5,2,0,0,177,178,5,53,0,0,178,180,5,8,0,0,179,145,1,0,0,0,179,149,
+		1,0,0,0,179,153,1,0,0,0,179,155,1,0,0,0,179,171,1,0,0,0,179,175,1,0,0,
+		0,179,176,1,0,0,0,179,177,1,0,0,0,180,11,1,0,0,0,181,183,5,14,0,0,182,
+		181,1,0,0,0,182,183,1,0,0,0,183,184,1,0,0,0,184,185,5,12,0,0,185,186,3,
+		4,2,0,186,187,5,13,0,0,187,188,3,8,4,0,188,13,1,0,0,0,17,20,27,33,37,47,
+		49,59,65,83,91,129,131,142,162,167,179,182
 	};
 
 	public static readonly ATN _ATN =

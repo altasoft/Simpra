@@ -4,6 +4,73 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraExpressionTests
 {
+    [Fact]
+    public void InvalidSimpraSyntax_ShouldThrowException_WhenIncorrectAndSignIsUsedAndReturnStatement()
+    {
+        const string expressionCode =
+            """
+             return Amount is 100 && Amount is 200
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        // ReSharper disable ConvertToLocalFunction
+        var f = () => simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        // ReSharper restore ConvertToLocalFunction
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void InvalidSimpraSyntax_ShouldThrowException_WhenIncorrectAndSignIsUsed()
+    {
+        const string expressionCode =
+            """
+             Amount is 100 && Amount is 200
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        // ReSharper disable ConvertToLocalFunction
+        var f = () => simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        // ReSharper restore ConvertToLocalFunction
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void InvalidSimpraSyntax_ShouldThrowException_WithoutReturn()
+    {
+        const string expressionCode =
+            """
+             111 Amount is 100
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        // ReSharper disable ConvertToLocalFunction
+        var f = () => simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        // ReSharper restore ConvertToLocalFunction
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void InvalidSimpraSyntax_ShouldThrowException_WithReturn()
+    {
+        const string expressionCode =
+            """
+            return 111 Amount is 100
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        // ReSharper disable ConvertToLocalFunction
+        var f = () => simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        // ReSharper restore ConvertToLocalFunction
+        Assert.Throws<SimpraException>(() => f());
+    }
 
     [Fact]
     public void DictionaryIndexer_MissingKey_ReturnsDefaultValueForProperty()
@@ -15,15 +82,10 @@ public class SimpraExpressionTests
 
         var simpra = new Simpra();
         var model = GetTestModel();
-        model.DictionaryOfObjects = new Dictionary<string, Customer> { { "Georgia", new Customer
-            {
-            Id = 1,
-            Status = 10
-        }} };
+        model.DictionaryOfObjects = new Dictionary<string, Customer> { { "Georgia", new Customer { Id = 1, Status = 10 } } };
 
         var result = simpra.Execute<int, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(0, result);
-
     }
 
     [Fact]
@@ -39,7 +101,6 @@ public class SimpraExpressionTests
         model.Countries = new Dictionary<string, string> { { "Georgia", "Test" } };
         var result = simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
         Assert.False(result);
-
     }
 
     [Fact]
@@ -55,7 +116,6 @@ public class SimpraExpressionTests
         model.Countries = new Dictionary<string, string> { { "Georgia", "Test" } };
         var result = simpra.Execute<bool, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
         Assert.True(result);
-
     }
 
     [Fact]
@@ -70,7 +130,6 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal("TEST", result);
-
     }
 
     [Fact]
@@ -85,7 +144,6 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal("test", result);
-
     }
 
     [Fact]
@@ -100,8 +158,8 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal("BaseStaticMethod", result);
-
     }
+
     [Fact]
     public void CallBaseFunctionFromSimpra_ShouldReturnCorrectValue()
     {
@@ -114,7 +172,6 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal("BaseMethod", result);
-
     }
 
     [Fact]
@@ -129,7 +186,6 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<List<string>, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.True(result.SequenceEqual(["RU", "BE", "GE"]));
-
     }
 
     [Fact]
@@ -145,7 +201,6 @@ public class SimpraExpressionTests
         model.Color = Color.Blue;
         var result = simpra.Execute<Color, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(Color.Blue, result);
-
     }
 
     [Fact]
@@ -160,7 +215,6 @@ public class SimpraExpressionTests
         var model = GetTestModel();
         var result = simpra.Execute<int, ITransferModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(1, result);
-
     }
 
     [Fact]
@@ -239,18 +293,13 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"],
-            ListOfList = [[1, 2], [3, 4]]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], ListOfList = [[1, 2], [3, 4]] };
 
         var result = simpra.Execute<bool, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.True(result);
     }
+
     [Fact]
     public void ListOfList_ShouldReturnCorrectly()
     {
@@ -260,18 +309,13 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"],
-            ListOfList = [[1, 2], [3, 4]]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], ListOfList = [[1, 2], [3, 4]] };
 
         var result = simpra.Execute<List<List<int>>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.Equal(4, result[1][1]);
     }
+
     [Fact]
     public void GetComplexObject_ShouldReturnCorrectly()
     {
@@ -294,13 +338,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"],
-            IntegerEnumerable = [1, 2, 3],
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], IntegerEnumerable = [1, 2, 3] };
 
         var result = simpra.Execute<IEnumerable<int>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -316,13 +354,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"],
-            IntegerArray = [1, 2, 3],
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], IntegerArray = [1, 2, 3] };
 
         var result = simpra.Execute<int[], ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -343,7 +375,8 @@ public class SimpraExpressionTests
             EnumList = [Color.Blue, Color.Green],
             IntegerList = [1, 2, 3],
             StringList = ["test", "test2"],
-            ComplexList = [
+            ComplexList =
+            [
                 new Customer { Id = 1, Status = 1 },
                 new Customer { Id = 2, Status = 2 }
             ]
@@ -363,12 +396,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
 
         var result = simpra.Execute<bool, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -384,12 +412,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
 
         var result = simpra.Execute<List<string>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -405,12 +428,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
 
         var result = simpra.Execute<List<Color>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
@@ -426,12 +444,7 @@ public class SimpraExpressionTests
             """;
 
         var simpra = new Simpra();
-        var model = new ListModel
-        {
-            EnumList = [Color.Blue, Color.Green],
-            IntegerList = [1, 2, 3],
-            StringList = ["test", "test2"]
-        };
+        var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
 
         var result = simpra.Execute<List<int>, ListModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(2, result[1]);
@@ -575,7 +588,6 @@ public class SimpraExpressionTests
     }
 
     [Fact]
-
     public void Expression_Should_ReturnMultipleValues_When_AggregateListValues()
     {
         const string expressionCode =
@@ -630,6 +642,7 @@ public class SimpraExpressionTests
 
         Assert.True(result);
     }
+
     [Fact]
     public void Expression_Should_ReturnTrue_When_AmountInCurrencyIsGreaterThanThresholdAndMatchesPattern()
     {
@@ -839,11 +852,7 @@ public class SimpraExpressionTests
         var simpra = new Simpra();
         var model = GetTestModel();
         var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
-            new SimpraCompilerOptions
-            {
-                MutabilityOption = MutabilityOption.Immutable,
-                StringComparisonOption = StringComparisonOption.IgnoreCase
-            });
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.Immutable, StringComparisonOption = StringComparisonOption.IgnoreCase });
         Assert.True(result);
     }
 
@@ -984,7 +993,6 @@ public class SimpraExpressionTests
         model.Transfer!.Amount = -1;
         result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
         Assert.Equal(1000, result);
-
     }
 
     [Fact]
@@ -1039,7 +1047,8 @@ public class SimpraExpressionTests
         var simpra = new Simpra();
         var model = GetTestModel();
 
-        var result = simpra.Execute<int, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
+        var result = simpra.Execute<int, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
 
         Assert.Equal(31, result);
         Assert.Equal(12, (int)model.CustomerId);
@@ -1125,9 +1134,9 @@ public class SimpraExpressionTests
         var simpra = new Simpra();
         var model = new TestModelMain { Test = null };
         const string expression = """
-                              return 10
-                              return true
-                              """;
+                                  return 10
+                                  return true
+                                  """;
 
         var result = simpra.Execute<bool, TestModelMain, TestFunctions>(model, new TestFunctions(), expression);
 
@@ -1163,8 +1172,8 @@ public class SimpraExpressionTests
     public void ExecuteExpression_Should_ReturnTrue_When_PropertyIsEnum()
     {
         const string expression = """
-                                  return Test.Test is 'Test1';
-                              """;
+                                      return Test.Test is 'Test1';
+                                  """;
         var simpra = new Simpra();
         var model = new TestModelMain { Test = new TestModel1 { Test = TestModel2.Test1 } };
         var result = simpra.Execute<bool, TestModelMain, TestFunctions>(model, new TestFunctions(), expression);
@@ -1176,10 +1185,10 @@ public class SimpraExpressionTests
     public void ExecuteExpression_Should_ReturnZero_When_AddingOneAndNegativeOne()
     {
         const string expression = """
-                              let x = 1
-                              let y = -1
-                              return x + y
-                              """;
+                                  let x = 1
+                                  let y = -1
+                                  return x + y
+                                  """;
         var simpra = new Simpra();
         var model = new TestModelMain { Test = new TestModel1 { Test = TestModel2.Test2 } };
         var result = simpra.Execute<int, TestModelMain, TestFunctions>(model, new TestFunctions(), expression);
@@ -1202,22 +1211,6 @@ public class SimpraExpressionTests
         var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
 
         Assert.Equal(2, result);
-    }
-
-    [Fact]
-    public void Expression_Should_ReturnTwo_When_XIsSixty2()
-    {
-        const string expressionCode =
-            """
-             Transfer.Amount fs 10
-            """;
-
-        var simpra = new Simpra();
-        var model = GetTestModel(); // Model is irrelevant here
-
-        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
-
-        Assert.True(result);
     }
 
     [Fact]
@@ -1277,11 +1270,8 @@ public class SimpraExpressionTests
         var simpra = new Simpra();
         var model = GetTestModel(); // Model is irrelevant here
         var result = await simpra.ExecuteAsync<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
-            new SimpraCompilerOptions
-            {
-                MutabilityOption = MutabilityOption.Immutable,
-                StringComparisonOption = StringComparisonOption.IgnoreCase
-            }, CancellationToken.None);
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.Immutable, StringComparisonOption = StringComparisonOption.IgnoreCase },
+            CancellationToken.None);
         Assert.False(result);
     }
 
@@ -1580,16 +1570,17 @@ public class SimpraExpressionTests
     public void Expression_Should_UpdateObjectProperties_And_ReturnFalse()
     {
         const string expressionCode = """
-                            $mutable on
-                            Transfer.Amount = 15
-                            Transfer.Currency = 'GBP'
-                            return Transfer.Amount > 100 or Transfer.Currency is 'USD';
-                            """;
+                                      $mutable on
+                                      Transfer.Amount = 15
+                                      Transfer.Currency = 'GBP'
+                                      return Transfer.Amount > 100 or Transfer.Currency is 'USD';
+                                      """;
 
         var simpra = new Simpra();
         var model = GetTestModel();
 
-        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
 
         Assert.Equal(15, model.Transfer!.Amount);
         Assert.Equal("GBP", model.Transfer.Currency);
@@ -1649,29 +1640,24 @@ public class SimpraExpressionTests
 
     private static TestModel GetTestModel()
     {
-        return new TestModel
-        {
-            Transfer = new Transfer { Amount = 100, Currency = "USD" },
-            Customer = new Customer { Id = 1, Status = 1 },
-            Remittance = "Test"
-        };
+        return new TestModel { Transfer = new Transfer { Amount = 100, Currency = "USD" }, Customer = new Customer { Id = 1, Status = 1 }, Remittance = "Test" };
     }
 
     public class BaseFunctions
     {
         public static string CallBaseStaticMethod() => "BaseStaticMethod";
+
         public static string CallBaseMethod() => "BaseMethod";
     }
+
     public interface IFunctions : IBaseFunctions
     {
         string Upper(string str);
-
     }
 
     public interface IBaseFunctions
     {
         string Lower(string str);
-
     }
 
     public class TestFunctions : BaseFunctions, IFunctions
@@ -1691,7 +1677,9 @@ public class SimpraExpressionTests
         public string Upper(string str) => str.ToUpper();
 
         public string Lower(string str) => str.ToLower();
+
         public ValueTask<List<string>> ListOfCurrencyCodes(string name) => ValueTask.FromResult(new List<string>() { "EUR", "GEL" });
+
         public string[] List(string key)
         {
             return ["RU", "BE"];
@@ -1704,7 +1692,5 @@ public class SimpraExpressionTests
         }
 #pragma warning restore S2325
         // ReSharper restore UnusedMember.Global
-
     }
-
 }
