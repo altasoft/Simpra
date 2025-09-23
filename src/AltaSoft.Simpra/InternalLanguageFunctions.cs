@@ -10,6 +10,8 @@ internal static class InternalLanguageFunctions
     // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
+    public static SimpraString substring(SimpraString input, SimpraNumber index) => SimpraString.Substring(input, index);
+    public static SimpraString substring(SimpraString input, SimpraNumber index, SimpraNumber count) => SimpraString.Substring(input, index, count);
     public static SimpraNumber length(SimpraString input) => new(input.Value.Length);
     public static SimpraNumber length(SimpraString[] input) => new(input.Length);
     public static SimpraNumber length(SimpraNumber[] input) => new(input.Length);
@@ -48,7 +50,8 @@ internal static class InternalLanguageFunctions
         nameof(sum),
         nameof(@string),
         nameof(@number),
-        nameof(@date)
+        nameof(@date),
+        nameof(substring)
     ];
 
     internal static bool IsSimpraBuiltInFunction(this string name) => s_builtInFunctions.Contains(name);

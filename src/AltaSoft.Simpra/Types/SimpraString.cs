@@ -68,15 +68,26 @@ internal struct SimpraString : ISimpraType<string>
         if (!value.HasValue)
             return value;
 
-        var startIndex = (int)index.Value;
+        var startIndex = (int)index.Value - 1; // convert 1-based to 0-based index
         var length = (int)count.Value;
 
-        return startIndex < 0 || length < 0 || startIndex + length > value.Value.Length
-            ? throw new InvalidOperationException("The index and count must be within the bounds of the string")
-            : new SimpraString(value.Value.Substring(startIndex, length));
+        if (startIndex < 0)
+            startIndex = 0;
+
+        if (length < 0)
+            length = 0;
+
+        if (startIndex >= value.Value.Length || length == 0)
+            return new SimpraString(string.Empty);
+
+        if (startIndex + length >= value.Value.Length)
+        {
+            length = value.Value.Length - startIndex;
+        }
+        return new SimpraString(value.Value.Substring(startIndex, length));
     }
 
-    public static SimpraString Substring(SimpraString value, SimpraNumber index) => !value.HasValue ? value : new SimpraString(value.Value.Substring((int)index.Value, 1));
+    public static SimpraString Substring(SimpraString value, SimpraNumber index) => Substring(value, index, 1);
 
     public static SimpraBool Like(SimpraString value, SimpraString pattern)
     {
