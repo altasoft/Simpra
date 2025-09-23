@@ -179,6 +179,7 @@ Simpra provides a set of internal functions out-of-the-box:
 - **Strings**
   - `number(str)` – converts to number
   - `date(str)` – converts to date
+  - `substring(str, index, count)` – Retrieves part of a string starting at a **1-based position**.
 ---
 
 ### Extended Membership Operators

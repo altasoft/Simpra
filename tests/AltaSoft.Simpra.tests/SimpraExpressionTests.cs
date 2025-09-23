@@ -4,6 +4,171 @@ namespace AltaSoft.Simpra.Tests;
 
 public class SimpraExpressionTests
 {
+    [Theory]
+    // basic / within bounds
+    [InlineData("USD", 1, 3, "USD")]   // from U
+    [InlineData("USD", 1, 2, "US")]
+    [InlineData("USD", 2, 2, "SD")]   // from S
+    [InlineData("USD", 3, 1, "D")]    // from D
+
+    // length clamping at the end
+    [InlineData("USD", 1, 10003, "USD")]
+    [InlineData("USD", 3, 10, "D")]
+
+    // start beyond end
+    [InlineData("USD", 1000, 1, "")]
+    [InlineData("USD", 4, 1, "")]     // beyond "USD"
+
+    // start exactly at end
+    [InlineData("USD", 4, 0, "")]
+    [InlineData("USD", 4, 10, "")]
+
+    // zero length
+    [InlineData("USD", 1, 0, "")]
+    [InlineData("USD", 2, 0, "")]
+    [InlineData("USD", 3, 0, "")]
+
+    // negative/zero start → clamp to 1
+    [InlineData("USD", 0, 1, "U")]
+    [InlineData("USD", -5, 2, "US")]
+    [InlineData("USD", -2, 100, "USD")]
+
+    // negative length → empty
+    [InlineData("USD", 1, -1, "")]
+    [InlineData("USD", 3, -10, "")]
+    [InlineData("USD", -2, -10, "")]
+
+    // empty input
+    [InlineData("", 1, 5, "")]
+    [InlineData("", 10, 1, "")]
+    [InlineData("", -3, 2, "")]
+    [InlineData("", 1, 0, "")]
+
+    // whitespace
+    [InlineData(" ", 1, 1, " ")]
+    [InlineData("   ", 2, 2, "  ")]
+    [InlineData("   ", 2, 100, "  ")]
+
+    // non-ASCII (safe checks with multi-byte chars)
+    [InlineData("თბილისი", 1, 2, "თბ")]
+    [InlineData("თბილისი", 3, 3, "ილი")]
+    [InlineData("თბილისი", 11, 5, "")]
+    [InlineData("თბილისი", -3, 100, "თბილისი")]
+
+    public void BuiltInFunction_Substring_EdgeCases(string input, int start, int length, string expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = input;
+        var expressionCode = $"return substring(Ccy,{start},{length})";
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Substring_ShouldMatchExamplesFromPrompt()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = "USD";
+
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,0,3)");
+        Assert.Equal("USD", result);
+
+        result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,0,10003)");
+        Assert.Equal("USD", result);
+
+        result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,1000,1)");
+        Assert.Equal("", result);
+
+        result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,1000,0)");
+        Assert.Equal("", result);
+
+        result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,1,0)");
+        Assert.Equal("", result);
+    }
+    [Theory]
+    // basic in-bounds
+    [InlineData("USD", 1, "U")]
+    [InlineData("USD", 2, "S")]
+    [InlineData("USD", 3, "D")]
+
+    // at/after end => empty
+    [InlineData("USD", 4, "")]
+    [InlineData("USD", 1000, "")]
+    [InlineData("U", 2, "")]
+    [InlineData("", 1, "")]
+    [InlineData("", 5, "")]
+
+    // zero/negative start → clamp to 1
+    [InlineData("USD", 0, "U")]
+    [InlineData("USD", -1, "U")]
+    [InlineData("USD", -5, "U")]
+    [InlineData("", -3, "")]
+
+    // whitespace
+    [InlineData(" X ", 1, " ")]
+    [InlineData(" X ", 2, "X")]
+    [InlineData(" X ", 3, " ")]
+
+    // non-ASCII (single UTF-16 code units)
+    [InlineData("თბილისი", 1, "თ")]
+    [InlineData("თბილისი", 3, "ი")]
+    [InlineData("თბილისი", 6, "ს")]
+    [InlineData("თბილისი", 7, "ი")]
+    [InlineData("თბილისი", 8, "")]
+
+    // very large index
+    [InlineData("USD", int.MaxValue, "")]
+    public void BuiltInFunction_Substring_StartOnly_EdgeCases(string input, int start, string expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = input;
+        var expressionCode = $"return substring(Ccy,{start})";
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Substring_StartOnly_NullSource_ShouldBeEmpty()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = null;
+
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,1)");
+        Assert.Equal(null, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Substring_NullSource_ShouldBeNull()
+    {
+        // If your DSL defines a behavior for nulls, keep this.
+        // If it should throw instead, change to Assert.Throws.
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = null!;
+
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,0,3)");
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Substring_ShouldReturnCorrectSubstringOfLength1()
+    {
+        const string expressionCode = "return substring(Ccy,1)";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = "USD";
+
+        var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("U", result);
+    }
+
     [Fact]
     public void InvalidSimpraSyntax_ShouldThrowException_WhenIncorrectAndSignIsUsedAndReturnStatement()
     {
