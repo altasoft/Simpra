@@ -75,10 +75,10 @@ public class MyChildClass : MyClass
     public required string Name { get; set; }
     [XmlIgnore]
     public int Age { get; set; }
-    public MyClass1[] CollectionClass1 { get; set; }
-    public CountryCode[] Countries { get; set; }
-    public CountryCode Country { get; set; }
-    public Dictionary<int, int> Dictionary { get; set; }
+    public required MyClass1[] CollectionClass1 { get; set; }
+    public required CountryCode[] Countries { get; set; }
+    public required CountryCode Country { get; set; }
+    public required Dictionary<int, int> Dictionary { get; set; }
 
     public void Child()
     {
@@ -97,5 +97,5 @@ public class MyClass
 public class MyClass1
 {
     public int Info { get; set; }
-    public List<MyClass> CollectionMyClasses { get; set; }
+    public required List<MyClass> CollectionMyClasses { get; set; }
 }

@@ -140,7 +140,7 @@ public class SimpraExpressionTests
         model.Ccy = null;
 
         var result = simpra.Execute<string, TestModel, IFunctions>(model, new TestFunctions(), "return substring(Ccy,1)");
-        Assert.Equal(null, result);
+        Assert.Null(result);
     }
 
     [Fact]

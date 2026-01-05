@@ -2,12 +2,13 @@
 
   <PropertyGroup>
 	<TargetFrameworks>net9.0;net8.0</TargetFrameworks>
-	<Nullable>enable</Nullable>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AltaSoft.DomainPrimitives" Version="5.1.1" />
-	<PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+	<PackageReference Include="AltaSoft.DomainPrimitives" />
+	<PackageReference Include="Antlr4.Runtime.Standard" />
   </ItemGroup>
 
   <ItemGroup>
