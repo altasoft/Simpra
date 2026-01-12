@@ -13,11 +13,11 @@ public class ListModel
 }
 public interface ICustomerModel
 {
-    public Customer Customer { get; set; }
+    Customer Customer { get; set; }
 }
 public interface ITransferModel : ICustomerModel
 {
-    public Transfer? Transfer { get; set; }
+    Transfer? Transfer { get; set; }
 
 }
 
@@ -41,11 +41,11 @@ public class TestModel : BaseModel, ITransferModel
     public int? Nint1 { get; set; }
     public short Nint2 { get; set; } = 20;
     public Xy Xy { get; set; } = new() { X = 1, Y = 2 };
-    public string Ccy { get; set; } = "GEL";
+    public string? Ccy { get; set; } = "GEL";
     public IEnumerable<short> Values { get; set; } = [1, 2, 3];
     public NonNegativeAmount? NullableAmount { get; set; }
     public int? NullableIntegerProperty { get; set; }
-    public List<Customer2> CustomerList { get; set; }
+    public List<Customer2>? CustomerList { get; set; }
 
 }
 

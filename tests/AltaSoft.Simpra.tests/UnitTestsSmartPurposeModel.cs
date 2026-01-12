@@ -27,5 +27,3 @@ public sealed class SmartPurposeModel
 
     public string GetValue(string key) => P.TryGetValue(key, out var result) ? result : string.Empty;
 }
-
-

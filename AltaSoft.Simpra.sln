@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltaSoft.Simpra", "src\AltaSoft.Simpra\AltaSoft.Simpra.csproj", "{8141457D-F0B4-42C7-8C35-87B1CA94E705}"
 EndProject
@@ -14,7 +14,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C35F7D98-8981-47C6-A4FD-1ECB01BB940C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A3869290-51B5-4402-95E6-E95D75A72ABA}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build_nuget_dont_publish.yml = .github\workflows\build_nuget_dont_publish.yml
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\publish_nuget.yml = .github\workflows\publish_nuget.yml
 	EndProjectSection
 EndProject
 Global
@@ -42,6 +52,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BC2F2760-4322-4C79-B476-9882A65491F8} = {C35F7D98-8981-47C6-A4FD-1ECB01BB940C}
+		{718B360D-CA84-FE14-AEC3-59E8ACBFC78D} = {C35F7D98-8981-47C6-A4FD-1ECB01BB940C}
+		{A3869290-51B5-4402-95E6-E95D75A72ABA} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D84BAEEA-E226-4291-A9E6-A900751C5004}
