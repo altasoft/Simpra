@@ -1,6 +1,7 @@
-﻿using AltaSoft.Simpra;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+
+namespace AltaSoft.Simpra.Benchmark;
 
 public class SimpraBenchmark
 {
@@ -53,6 +54,6 @@ public sealed class Program
 {
     public static void Main(string[] args)
     {
-        var summary = BenchmarkRunner.Run<SimpraBenchmark>();
+        _ = BenchmarkRunner.Run<SimpraBenchmark>();
     }
 }
