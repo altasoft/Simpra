@@ -4,8 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Core Dependencies -->
-    <PackageVersion Include="AltaSoft.DomainPrimitives" Version="7.0.1" />
-    <PackageVersion Include="AltaSoft.DomainPrimitives.Generator" Version="7.0.1" />
+    <PackageVersion Include="AltaSoft.DomainPrimitives" Version="7.0.2" />
+    <PackageVersion Include="AltaSoft.DomainPrimitives.Generator" Version="7.0.2" />
     <PackageVersion Include="Antlr4.Runtime.Standard" Version="4.13.1" />
     <!-- Testing Dependencies -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
