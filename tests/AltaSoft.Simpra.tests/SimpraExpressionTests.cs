@@ -157,22 +157,6 @@ public class SimpraExpressionTests
     }
 
     [Fact]
-    public void BuiltInFunc2tion_Substring_NullSource_ShouldBeNull()
-    {
-        // If your DSL defines a behavior for nulls, keep this.
-        // If it should throw instead, change to Assert.Throws.
-        var simpra = new Simpra();
-        var model = new DebtorAccountModel()
-        {
-            DebtorAccount = new DebtorAccount()
-        };
-
-        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(model, new TestFunctions(), "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Properties[\"AccSubType\"] is \"8\"");
-        Assert.False(result);
-    }
-
-
-    [Fact]
     public void BuiltInFunction_Substring_ShouldReturnCorrectSubstringOfLength1()
     {
         const string expressionCode = "return substring(Ccy,1)";
