@@ -50,10 +50,10 @@ public class SimpraExpressionTests
     [InlineData("   ", 2, 100, "  ")]
 
     // non-ASCII (safe checks with multi-byte chars)
-    [InlineData("???????", 1, 2, "??")]
-    [InlineData("???????", 3, 3, "???")]
-    [InlineData("???????", 11, 5, "")]
-    [InlineData("???????", -3, 100, "???????")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 1, 2, "\u0410\u0411")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 3, 3, "\u0412\u0413\u0414")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 11, 5, "")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", -3, 100, "\u0410\u0411\u0412\u0413\u0414\u0415\u0416")]
 
     public void BuiltInFunction_Substring_EdgeCases(string input, int start, int length, string expected)
     {
