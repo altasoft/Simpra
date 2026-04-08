@@ -569,11 +569,18 @@ internal partial class SimpraParserVisitor<TResult, TModel>
 
         var keyExpr = index.Type != keyType ? Expression.Convert(index, keyType) : index;
         var valueVar = Expression.Variable(valueType, "dictValue");
+        var dictVar = Expression.Variable(objectType, "dictRef");
+        var assignDict = Expression.Assign(dictVar, left);
 
-        var tryGetValueCall = Expression.Call(left, tryGetValueMethod, keyExpr, valueVar);
+        var tryGetValueCall = Expression.Call(dictVar, tryGetValueMethod, keyExpr, valueVar);
+        var notNull = Expression.NotEqual(dictVar, Expression.Constant(null, objectType));
 
         var defaultValue = Expression.Default(valueType);
-        var block = Expression.Block([valueVar], Expression.Condition(tryGetValueCall, valueVar, defaultValue));
+        var block = Expression.Block(
+            [dictVar, valueVar],
+            assignDict,
+            Expression.Condition(Expression.AndAlso(notNull, tryGetValueCall), valueVar, defaultValue)
+        );
 
         return ConvertToSimpraType(block, false, context);
     }
