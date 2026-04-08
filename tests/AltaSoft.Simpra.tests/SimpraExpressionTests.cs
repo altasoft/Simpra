@@ -1,4 +1,4 @@
-﻿using AltaSoft.Simpra.Tests.Models;
+using AltaSoft.Simpra.Tests.Models;
 
 namespace AltaSoft.Simpra.Tests;
 
@@ -28,12 +28,12 @@ public class SimpraExpressionTests
     [InlineData("USD", 2, 0, "")]
     [InlineData("USD", 3, 0, "")]
 
-    // negative/zero start → clamp to 1
+    // negative/zero start ? clamp to 1
     [InlineData("USD", 0, 1, "U")]
     [InlineData("USD", -5, 2, "US")]
     [InlineData("USD", -2, 100, "USD")]
 
-    // negative length → empty
+    // negative length ? empty
     [InlineData("USD", 1, -1, "")]
     [InlineData("USD", 3, -10, "")]
     [InlineData("USD", -2, -10, "")]
@@ -50,10 +50,10 @@ public class SimpraExpressionTests
     [InlineData("   ", 2, 100, "  ")]
 
     // non-ASCII (safe checks with multi-byte chars)
-    [InlineData("თბილისი", 1, 2, "თბ")]
-    [InlineData("თბილისი", 3, 3, "ილი")]
-    [InlineData("თბილისი", 11, 5, "")]
-    [InlineData("თბილისი", -3, 100, "თბილისი")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 1, 2, "\u0410\u0411")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 3, 3, "\u0412\u0413\u0414")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", 11, 5, "")]
+    [InlineData("\u0410\u0411\u0412\u0413\u0414\u0415\u0416", -3, 100, "\u0410\u0411\u0412\u0413\u0414\u0415\u0416")]
 
     public void BuiltInFunction_Substring_EdgeCases(string input, int start, int length, string expected)
     {
@@ -101,7 +101,7 @@ public class SimpraExpressionTests
     [InlineData("", 1, "")]
     [InlineData("", 5, "")]
 
-    // zero/negative start → clamp to 1
+    // zero/negative start ? clamp to 1
     [InlineData("USD", 0, "U")]
     [InlineData("USD", -1, "U")]
     [InlineData("USD", -5, "U")]
@@ -113,11 +113,11 @@ public class SimpraExpressionTests
     [InlineData(" X ", 3, " ")]
 
     // non-ASCII (single UTF-16 code units)
-    [InlineData("თბილისი", 1, "თ")]
-    [InlineData("თბილისი", 3, "ი")]
-    [InlineData("თბილისი", 6, "ს")]
-    [InlineData("თბილისი", 7, "ი")]
-    [InlineData("თბილისი", 8, "")]
+    [InlineData("???????", 1, "?")]
+    [InlineData("???????", 3, "?")]
+    [InlineData("???????", 6, "?")]
+    [InlineData("???????", 7, "?")]
+    [InlineData("???????", 8, "")]
 
     // very large index
     [InlineData("USD", int.MaxValue, "")]
