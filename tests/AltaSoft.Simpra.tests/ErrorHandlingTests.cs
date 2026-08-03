@@ -9,9 +9,7 @@ public class ErrorHandlingTests
     public void InvalidSimpraSyntax_ShouldThrowException_WhenIncorrectAndSignIsUsedAndReturnStatement()
     {
         const string expressionCode =
-            """
-             return Amount is 100 && Amount is 200
-            """;
+            " return Amount is 100 && Amount is 200";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -26,9 +24,7 @@ public class ErrorHandlingTests
     public void InvalidSimpraSyntax_ShouldThrowException_WhenIncorrectAndSignIsUsed()
     {
         const string expressionCode =
-            """
-             Amount is 100 && Amount is 200
-            """;
+            " Amount is 100 && Amount is 200";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -43,9 +39,7 @@ public class ErrorHandlingTests
     public void InvalidSimpraSyntax_ShouldThrowException_WithoutReturn()
     {
         const string expressionCode =
-            """
-             111 Amount is 100
-            """;
+            " 111 Amount is 100";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -60,9 +54,7 @@ public class ErrorHandlingTests
     public void InvalidSimpraSyntax_ShouldThrowException_WithReturn()
     {
         const string expressionCode =
-            """
-            return 111 Amount is 100
-            """;
+            "return 111 Amount is 100";
 
         var simpra = new Simpra();
         var model = GetTestModel();

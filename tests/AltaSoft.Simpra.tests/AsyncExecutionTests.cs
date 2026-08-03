@@ -71,9 +71,7 @@ public class AsyncExecutionTests
     public async Task ExecuteExpression_Should_EvaluateAsyncCallWithinConditional()
     {
         const string expressionCode =
-            """
-            return when Compute(1, 1) > 1 then 'yes' else 'no' end
-            """;
+            "return when Compute(1, 1) > 1 then 'yes' else 'no' end";
 
         var simpra = new Simpra();
         var model = GetTestModel();

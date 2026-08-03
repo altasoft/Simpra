@@ -9,9 +9,7 @@ public class FunctionCallTests
     public void CallInterfaceFunctionFromSimpra_ShouldReturnCorrectValue()
     {
         const string expressionCode =
-            """
-            return Upper('test')
-            """;
+            "return Upper('test')";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -23,9 +21,7 @@ public class FunctionCallTests
     public void CallBaseInterfaceFunctionFromSimpra_ShouldReturnCorrectValue()
     {
         const string expressionCode =
-            """
-            return Lower('TEST')
-            """;
+            "return Lower('TEST')";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -37,9 +33,7 @@ public class FunctionCallTests
     public void CallBaseStaticFunctionFromSimpra_ShouldReturnCorrectValue()
     {
         const string expressionCode =
-            """
-            return CallBaseStaticMethod()
-            """;
+            "return CallBaseStaticMethod()";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -51,9 +45,7 @@ public class FunctionCallTests
     public void CallBaseFunctionFromSimpra_ShouldReturnCorrectValue()
     {
         const string expressionCode =
-            """
-            return CallBaseMethod()
-            """;
+            "return CallBaseMethod()";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -65,9 +57,7 @@ public class FunctionCallTests
     public void CallFunctionFromSimpra()
     {
         const string expressionCode =
-            """
-            return ListSomeCountries('GE')
-            """;
+            "return ListSomeCountries('GE')";
 
         var simpra = new Simpra();
         var model = GetTestModel();

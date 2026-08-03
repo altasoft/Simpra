@@ -9,9 +9,7 @@ public class ComplexObjectAccessTests
     public void DictionaryIndexer_MissingKey_ReturnsDefaultValueForProperty()
     {
         const string expressionCode =
-            """
-            return DictionaryOfObjects['test'].Id
-            """;
+            "return DictionaryOfObjects['test'].Id";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -25,9 +23,7 @@ public class ComplexObjectAccessTests
     public void CallGetValueFromDictionaryWhenKeyDoesNotExist_ShouldReturnDefault()
     {
         const string expressionCode =
-            """
-            return Countries['test'] is 'Test'
-            """;
+            "return Countries['test'] is 'Test'";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -40,9 +36,7 @@ public class ComplexObjectAccessTests
     public void CallGetValueFromDictionaryWhenKeyExist_ShouldReturnValue()
     {
         const string expressionCode =
-            """
-            return Countries['Georgia'] is 'Test'
-            """;
+            "return Countries['Georgia'] is 'Test'";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -55,9 +49,7 @@ public class ComplexObjectAccessTests
     public void ModelWithInheritedClassProperties_ShouldFindPropertyCorrectly()
     {
         const string expressionCode =
-            """
-            return Color
-            """;
+            "return Color";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -70,9 +62,7 @@ public class ComplexObjectAccessTests
     public void ModelWithInheritedInterfaceProperties_ShouldFindPropertyCorrectly()
     {
         const string expressionCode =
-            """
-            return Customer.Id
-            """;
+            "return Customer.Id";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -84,9 +74,7 @@ public class ComplexObjectAccessTests
     public void Expression_ReturnNullableEnum_ReturnValueMustBeCorrect()
     {
         const string expressionCode =
-            """
-            return NullableEnum
-            """;
+            "return NullableEnum";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -104,9 +92,7 @@ public class ComplexObjectAccessTests
     public void Expression_ShouldCompareNullableEnum_ReturnValueMustBeCorrect()
     {
         const string expressionCode =
-            """
-            return NullableEnum is 'Green'
-            """;
+            "return NullableEnum is 'Green'";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -119,9 +105,7 @@ public class ComplexObjectAccessTests
     public void Expression_NestedDomainPrimitiveType_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return Transfer.RegulatoryReporting[1].Details[1].Information[1]
-            """;
+            "return Transfer.RegulatoryReporting[1].Details[1].Information[1]";
 
         var simpra = new Simpra();
         var model = Iso20022TransferModel.CreateForInformation();
@@ -135,9 +119,7 @@ public class ComplexObjectAccessTests
     public void Expression_NestedDomainPrimitiveType_ShouldCompareCorrectly()
     {
         const string expressionCode =
-            """
-            return Transfer.RegulatoryReporting[1].Details[1].Information[1] is 'Information1'
-            """;
+            "return Transfer.RegulatoryReporting[1].Details[1].Information[1] is 'Information1'";
 
         var simpra = new Simpra();
         var model = Iso20022TransferModel.CreateForInformation();
@@ -151,9 +133,7 @@ public class ComplexObjectAccessTests
     public void ExpressionListOfList_Comparison_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return ListOfList[2][2] is 4
-            """;
+            "return ListOfList[2][2] is 4";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], ListOfList = [[1, 2], [3, 4]] };
@@ -167,9 +147,7 @@ public class ComplexObjectAccessTests
     public void ListOfList_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return ListOfList
-            """;
+            "return ListOfList";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], ListOfList = [[1, 2], [3, 4]] };
@@ -196,9 +174,7 @@ public class ComplexObjectAccessTests
     public void EnumerableOfIntegers_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return IntegerEnumerable
-            """;
+            "return IntegerEnumerable";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], IntegerEnumerable = [1, 2, 3] };
@@ -212,9 +188,7 @@ public class ComplexObjectAccessTests
     public void ArrayOfIntegers_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return IntegerArray
-            """;
+            "return IntegerArray";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"], IntegerArray = [1, 2, 3] };
@@ -228,9 +202,7 @@ public class ComplexObjectAccessTests
     public void ListOfComplexObjects_ShouldReturnCorrectly()
     {
         const string expressionCode =
-            """
-            return ComplexList
-            """;
+            "return ComplexList";
 
         var simpra = new Simpra();
         var model = new ListModel
@@ -254,9 +226,7 @@ public class ComplexObjectAccessTests
     public void ExpressionStringListEqualsValue_ShouldReturnCorrectValues()
     {
         const string expressionCode =
-            """
-            return StringList[1] is 'test'
-            """;
+            "return StringList[1] is 'test'";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
@@ -270,9 +240,7 @@ public class ComplexObjectAccessTests
     public void StringList_ShouldReturnCorrectValues()
     {
         const string expressionCode =
-            """
-            return StringList
-            """;
+            "return StringList";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
@@ -286,9 +254,7 @@ public class ComplexObjectAccessTests
     public void EnumList_ShouldReturnCorrectValues()
     {
         const string expressionCode =
-            """
-            return EnumList
-            """;
+            "return EnumList";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
@@ -302,9 +268,7 @@ public class ComplexObjectAccessTests
     public void IntegerList_ShouldReturnCorrectValues()
     {
         const string expressionCode =
-            """
-            return IntegerList
-            """;
+            "return IntegerList";
 
         var simpra = new Simpra();
         var model = new ListModel { EnumList = [Color.Blue, Color.Green], IntegerList = [1, 2, 3], StringList = ["test", "test2"] };
@@ -317,9 +281,7 @@ public class ComplexObjectAccessTests
     public void Execute_ShouldReturnListOfComplexObject()
     {
         const string expressionCode =
-            """
-            return Transfer.RegulatoryReporting
-            """;
+            "return Transfer.RegulatoryReporting";
 
         var simpra = new Simpra();
         var model = Iso20022TransferModel.CreateForCountry("FR");
@@ -332,9 +294,7 @@ public class ComplexObjectAccessTests
     public void Execute_ShouldReturnComplexObject_WhenAccessedViaIndex()
     {
         const string expressionCode =
-            """
-            return Transfer.RegulatoryReporting[1]
-            """;
+            "return Transfer.RegulatoryReporting[1]";
 
         var simpra = new Simpra();
         var model = Iso20022TransferModel.CreateForCountry("FR");
@@ -347,9 +307,7 @@ public class ComplexObjectAccessTests
     public void Execute_ShouldReturnTrue_WhenAuthorityCountryIsFR()
     {
         const string expressionCode =
-            """
-            return Transfer.RegulatoryReporting[1].Authority.Country is 'FR'
-            """;
+            "return Transfer.RegulatoryReporting[1].Authority.Country is 'FR'";
 
         var simpra = new Simpra();
         var model = Iso20022TransferModel.CreateForCountry("FR");
@@ -362,9 +320,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnFalse_When_IndexIsOutOfRangeAndValueCompared()
     {
         const string expressionCode =
-            """
-            return Transfer.A[10] is  1
-            """;
+            "return Transfer.A[10] is  1";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -377,9 +333,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnFalse_When_NestedListIsUsed()
     {
         const string expressionCode =
-            """
-            return Transfer.OuterList[10].InnerList[1] is  1
-            """;
+            "return Transfer.OuterList[10].InnerList[1] is  1";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -392,9 +346,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnFalse_When_NestedListIsUsedX()
     {
         const string expressionCode =
-            """
-            return CustomerList[1] has value
-            """;
+            "return CustomerList[1] has value";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -407,9 +359,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnFalse_When_ArrayIsNullAndValueCompared()
     {
         const string expressionCode =
-            """
-            return Transfer.A[1] is  1
-            """;
+            "return Transfer.A[1] is  1";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -422,9 +372,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnDefault_When_ArrayIsNull()
     {
         const string expressionCode =
-            """
-            return Transfer.A[10]
-            """;
+            "return Transfer.A[10]";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -437,9 +385,7 @@ public class ComplexObjectAccessTests
     public void Expression_Should_ReturnFalse_When_TheValueIsNull()
     {
         const string expressionCode =
-            """
-            return Transfer.Customer.Id is 1
-            """;
+            "return Transfer.Customer.Id is 1";
 
         var simpra = new Simpra();
         var model = GetTestModel();
@@ -483,9 +429,7 @@ public class ComplexObjectAccessTests
     [Fact]
     public void ExecuteExpression_Should_ReturnTrue_When_PropertyIsEnum()
     {
-        const string expression = """
-                                      return Test.Test is 'Test1';
-                                  """;
+        const string expression = "    return Test.Test is 'Test1';";
         var simpra = new Simpra();
         var model = new TestModelMain { Test = new TestModel1 { Test = TestModel2.Test1 } };
         var result = simpra.Execute<bool, TestModelMain, TestFunctions>(model, new TestFunctions(), expression);
