@@ -1898,10 +1898,7 @@ public class SimpraExpressionTests
         Assert.Equal(0m, result);
     }
 
-    [Fact(Skip = "Suspected bug: InternalLanguageFunctions.number(SimpraString) calls 'new SimpraNumber(input.Value)' " +
-        "unconditionally instead of checking input.HasValue first (unlike round/abs/sum/substring, which all null-propagate). " +
-        "SimpraString.Value is string.Empty (not null) when the source has no value, so this passes '' to decimal.Parse and " +
-        "throws FormatException instead of returning NoValue. Un-skip once number() null-propagates like its siblings.")]
+    [Fact]
     public void BuiltInFunction_Number_FromNullString_ShouldReturnNullInsteadOfThrowing()
     {
         var simpra = new Simpra();
@@ -2160,9 +2157,7 @@ public class SimpraExpressionTests
         Assert.Equal(expected, result);
     }
 
-    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
-        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.Any) never matches and this " +
-        "always evaluates false. Un-skip once the equality bug is fixed.")]
+    [Fact]
     public void BinaryOperator_AnyIn_ShouldReturnTrue_When_AtLeastOneElementExistsInOtherList()
     {
         var simpra = new Simpra();
@@ -2182,9 +2177,7 @@ public class SimpraExpressionTests
         Assert.False(result);
     }
 
-    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
-        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.All) never matches and this " +
-        "always evaluates false. Un-skip once the equality bug is fixed.")]
+    [Fact]
     public void BinaryOperator_AllIn_ShouldReturnTrue_When_EveryElementExistsInOtherList()
     {
         var simpra = new Simpra();
@@ -2214,9 +2207,7 @@ public class SimpraExpressionTests
         Assert.True(result);
     }
 
-    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
-        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.All) never matches, making " +
-        "'all in' always false and this negated operator always true. Un-skip once the equality bug is fixed.")]
+    [Fact]
     public void BinaryOperator_AllNotIn_ShouldReturnFalse_When_AllElementsExistInOtherList()
     {
         var simpra = new Simpra();
@@ -2226,11 +2217,7 @@ public class SimpraExpressionTests
         Assert.False(result);
     }
 
-    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
-        "(SimpraNumber.cs ~line 116), so Enumerable.Except (used by the list '-' operator) never matches elements for " +
-        "number lists and nothing is subtracted. Un-skip once the equality bug is fixed. Note this only affects number " +
-        "lists: the equivalent string-list test (Expression_Should_ReturnTrue_When_CurrencyIsInSubtractedList) passes " +
-        "because SimpraString.Equals(object) correctly checks 'obj is SimpraString'.")]
+    [Fact]
     public void ListOperator_Subtract_OnNumberLists_ShouldRemoveMatchingElements()
     {
         var simpra = new Simpra();
@@ -2302,9 +2289,7 @@ public class SimpraExpressionTests
         Assert.Equal([1, 2, 3, 4], result);
     }
 
-    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
-        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Remove (used by SimpraList.SubtractAndAssign) never finds " +
-        "a match and no element is removed. Un-skip once the equality bug is fixed.")]
+    [Fact]
     public void CompoundAssignment_MinusEquals_OnLetListVariable_ShouldRemoveValue()
     {
         const string expressionCode = """
@@ -2391,14 +2376,7 @@ public class SimpraExpressionTests
         Assert.Throws<SimpraException>(() => f());
     }
 
-    [Fact(Skip = "Confirmed bug: SimpraParserVisitor.tools.cs CallFunction (~line 213) converts each call " +
-        "argument with 'ConvertToType(expr, paramTypes[i], context)', but 'paramTypes[i]' is the caller-side " +
-        "unwrapped argument type computed earlier (~line 182-195; decimal/bool/string/interop-underlying) used " +
-        "for FindBestMatch overload SCORING, not the selected method's actual declared parameter type " +
-        "(method.GetParameters()[i].ParameterType). Whenever the resolved overload's parameter type differs from " +
-        "that unwrapped type - e.g. a plain 'int' parameter, since any Simpra numeric literal unwraps to 'decimal' " +
-        "- Expression.Call is built with a mismatched argument type and throws ArgumentException at compile time. " +
-        "Un-skip once the fix passes the method's real parameter type to ConvertToType.")]
+    [Fact]
     public void CallExternalFunction_WithNonDecimalNumericParameter_ShouldSelectOverloadAndConvertArgument()
     {
         const string expressionCode = "return DescribeAsInt(7)";

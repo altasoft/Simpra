@@ -40,17 +40,17 @@ internal struct SimpraNumber : ISimpraType<decimal>
     public static implicit operator decimal(SimpraNumber value) => value.Value;
     public static implicit operator bool(SimpraNumber value) => value.Value != 0m;
 
-    public static implicit operator sbyte?(SimpraNumber value) => (sbyte?)value.Value;
-    public static implicit operator byte?(SimpraNumber value) => (byte?)value.Value;
-    public static implicit operator short?(SimpraNumber value) => (short?)value.Value;
-    public static implicit operator ushort?(SimpraNumber value) => (ushort?)value.Value;
-    public static implicit operator int?(SimpraNumber value) => (int?)value.Value;
-    public static implicit operator uint?(SimpraNumber value) => (uint?)value.Value;
-    public static implicit operator long?(SimpraNumber value) => (long?)value.Value;
-    public static implicit operator ulong?(SimpraNumber value) => (ulong?)value.Value;
-    public static implicit operator float?(SimpraNumber value) => (float?)value.Value;
-    public static implicit operator double?(SimpraNumber value) => (double?)value.Value;
-    public static implicit operator decimal?(SimpraNumber value) => value.Value;
+    public static implicit operator sbyte?(SimpraNumber value) => value.HasValue ? (sbyte?)value.Value : null;
+    public static implicit operator byte?(SimpraNumber value) => value.HasValue ? (byte?)value.Value : null;
+    public static implicit operator short?(SimpraNumber value) => value.HasValue ? (short?)value.Value : null;
+    public static implicit operator ushort?(SimpraNumber value) => value.HasValue ? (ushort?)value.Value : null;
+    public static implicit operator int?(SimpraNumber value) => value.HasValue ? (int?)value.Value : null;
+    public static implicit operator uint?(SimpraNumber value) => value.HasValue ? (uint?)value.Value : null;
+    public static implicit operator long?(SimpraNumber value) => value.HasValue ? (long?)value.Value : null;
+    public static implicit operator ulong?(SimpraNumber value) => value.HasValue ? (ulong?)value.Value : null;
+    public static implicit operator float?(SimpraNumber value) => value.HasValue ? (float?)value.Value : null;
+    public static implicit operator double?(SimpraNumber value) => value.HasValue ? (double?)value.Value : null;
+    public static implicit operator decimal?(SimpraNumber value) => value.HasValue ? value.Value : null;
     public static implicit operator bool?(SimpraNumber value) => value.HasValue ? value.Value != 0m : null;
 
     public static implicit operator SimpraNumber(sbyte value) => new(value);
@@ -113,7 +113,7 @@ internal struct SimpraNumber : ISimpraType<decimal>
     {
         if (obj is null)
             return !HasValue;
-        if (obj is SimpraDate simpraVar)
+        if (obj is SimpraNumber simpraVar)
             return Equals(simpraVar);
 
         return obj.GetType().IsNumber() && Value == Convert.ToDecimal(obj, CultureInfo.InvariantCulture);
