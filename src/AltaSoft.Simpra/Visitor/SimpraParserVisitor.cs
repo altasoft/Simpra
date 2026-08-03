@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using AltaSoft.DomainPrimitives;
 using AltaSoft.Simpra.Types;
 using Antlr4.Runtime.Tree;
 
@@ -229,9 +230,23 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         var exprProperty2 = Expression.Property(variable, propertyName);
         var notNull = Expression.NotEqual(variable, Expression.Constant(null, exprBaseObject.Type));
 
-        var defaultValue = Expression.Default(exprProperty2.Type);
+        // Domain primitives throw when their uninitialized default value is read, so if the property
+        // is a domain primitive, unwrap it to its underlying type before building the null-fallback
+        // default. Otherwise the fallback would be an uninitialized domain primitive that throws as
+        // soon as ConvertToSimpraType tries to convert it.
+        Expression truePart = exprProperty2;
+        Expression defaultValue;
+        if (exprProperty2.Type.TryGetUnderlyingDomainPrimitiveType(out var domainType))
+        {
+            truePart = Expression.Convert(exprProperty2, domainType);
+            defaultValue = Expression.Default(domainType);
+        }
+        else
+        {
+            defaultValue = Expression.Default(exprProperty2.Type);
+        }
 
-        var expr = Expression.Condition(notNull, exprProperty2, defaultValue);
+        var expr = Expression.Condition(notNull, truePart, defaultValue);
 
         var block = Expression.Block([variable], assignExpr, expr);
 
