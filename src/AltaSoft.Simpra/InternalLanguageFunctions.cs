@@ -31,10 +31,10 @@ internal static class InternalLanguageFunctions
     public static SimpraString @string(SimpraBool input) => new(input.ToString());
     public static SimpraString @string(SimpraDate input) => new(input.ToString());
 
-    public static SimpraNumber number(SimpraString input) => new(input.Value);
-    public static SimpraNumber number(SimpraBool input) => new(input.Value);
+    public static SimpraNumber number(SimpraString input) => input.HasValue ? new SimpraNumber(input.Value) : (SimpraNumber)SimpraNumber.NoValue;
+    public static SimpraNumber number(SimpraBool input) => input.HasValue ? new SimpraNumber(input.Value) : (SimpraNumber)SimpraNumber.NoValue;
 
-    public static SimpraDate date(SimpraString input) => new(input.Value);
+    public static SimpraDate date(SimpraString input) => input.HasValue ? new SimpraDate(input.Value) : (SimpraDate)SimpraDate.NoValue;
 
 #pragma warning restore IDE1006 // Naming Styles
     // ReSharper enable InconsistentNaming

@@ -205,12 +205,13 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         if (method is null)
             throw new SimpraException(context, $"Function '{methodName}({string.Join(',', paramTypes.Select(x => x.Name))})' not found");
 
+        var methodParameters = method.GetParameters();
         var convertedArguments = new Expression[paramTypes.Length + (matchWithToken ? 1 : 0)];
         for (var i = 0; i < paramTypes.Length; i++)
         {
             var expr = arguments[i];
 
-            convertedArguments[i] = ConvertToType(expr, paramTypes[i], context);
+            convertedArguments[i] = ConvertToType(expr, methodParameters[i].ParameterType, context);
         }
 
         if (matchWithToken)

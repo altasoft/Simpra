@@ -62,9 +62,8 @@ public class SimpraMetaDataTest
         var typeModel = metadataService.GetTypeModel("MyClass");
 
         Assert.NotNull(typeModel);
-        Assert.NotNull(typeModel);
         Assert.Equal("MyClass", typeModel.Name);
-        //Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyClass.Base));
+        Assert.Contains(typeModel.Properties, p => p.Name == nameof(MyClass.Base));
         Assert.Contains(typeModel.Functions, f => f.Name == nameof(MyClass.Father));
     }
 }

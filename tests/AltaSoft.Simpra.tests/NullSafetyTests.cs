@@ -11,8 +11,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\"");
 
         Assert.False(result);
@@ -24,8 +24,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Properties[\"AccSubType\"] is \"8\"");
 
         Assert.False(result);
@@ -37,8 +37,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Properties[\"AccSubType\"] is \"8\"");
 
         Assert.False(result);
@@ -50,8 +50,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<string, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.Properties[\"AccType\"]");
 
         Assert.Null(result);
@@ -63,8 +63,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] has value");
 
         Assert.False(result);
@@ -84,8 +84,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\"");
 
         Assert.False(result);
@@ -103,8 +103,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\"");
 
         Assert.True(result);
@@ -122,8 +122,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<string, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.Properties[\"AccType\"]");
 
         Assert.Equal("200", result);
@@ -141,8 +141,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] has value");
 
         Assert.False(result);
@@ -156,8 +156,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<int, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<int, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.CustomerMap[\"key\"].Id");
 
         Assert.Equal(0, result);
@@ -169,8 +169,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.CustomerMap[\"key\"].Id is 1");
 
         Assert.False(result);
@@ -190,8 +190,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<int, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<int, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.CustomerMap[\"vip\"].Id");
 
         Assert.Equal(42, result);
@@ -209,8 +209,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<int, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<int, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.CustomerMap[\"unknown\"].Id");
 
         Assert.Equal(0, result);
@@ -227,8 +227,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Nested = null }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Nested.Properties[\"Key\"] is \"value\"");
 
         Assert.False(result);
@@ -243,8 +243,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Nested = null }
         };
 
-        var result = simpra.Execute<string, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.Nested.Properties[\"Key\"]");
 
         Assert.Null(result);
@@ -264,8 +264,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Nested.Properties[\"Key\"] is \"value\"");
 
         Assert.False(result);
@@ -286,8 +286,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Nested.Properties[\"Key\"] is \"value\"");
 
         Assert.True(result);
@@ -304,8 +304,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Tags = null }
         };
 
-        var result = simpra.Execute<string, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return DebtorAccount.Tags[1]");
 
         Assert.Null(result);
@@ -320,8 +320,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Tags = null }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Tags[1] is \"hello\"");
 
         Assert.False(result);
@@ -338,8 +338,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Name = null }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Name is \"Test\"");
 
         Assert.False(result);
@@ -354,8 +354,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Name = null }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Name has value");
 
         Assert.False(result);
@@ -370,8 +370,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Name = "Test" }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Name has value");
 
         Assert.True(result);
@@ -388,8 +388,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Name = "Test" }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Name is \"Test\"");
 
         Assert.False(result);
@@ -404,8 +404,8 @@ public class NullSafetyTests
             DebtorAccount = new DebtorAccount { Name = "Test" }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Name is \"Test\"");
 
         Assert.True(result);
@@ -419,8 +419,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is not \"200\"");
 
         Assert.True(result);
@@ -434,8 +434,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] in [\"200\", \"300\"]");
 
         Assert.False(result);
@@ -449,8 +449,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<string, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "return when DebtorAccount.Properties[\"AccType\"] is \"200\" then \"match\" else \"no match\"");
 
         Assert.Equal("no match", result);
@@ -470,8 +470,8 @@ public class NullSafetyTests
             Countries = null
         };
 
-        var result = simpra.Execute<bool, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "Countries[\"Georgia\"] is \"Test\"");
 
         Assert.False(result);
@@ -489,8 +489,8 @@ public class NullSafetyTests
             Countries = null
         };
 
-        var result = simpra.Execute<string, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<string, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "return Countries[\"Georgia\"]");
 
         Assert.Null(result);
@@ -508,8 +508,8 @@ public class NullSafetyTests
             DictionaryOfObjects = null
         };
 
-        var result = simpra.Execute<int, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<int, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "return DictionaryOfObjects[\"test\"].Id");
 
         Assert.Equal(0, result);
@@ -527,8 +527,8 @@ public class NullSafetyTests
             DictionaryOfObjects = null
         };
 
-        var result = simpra.Execute<bool, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "DictionaryOfObjects[\"test\"].Id is 1");
 
         Assert.False(result);
@@ -547,8 +547,8 @@ public class NullSafetyTests
             Remittance = "Test"
         };
 
-        var result = simpra.Execute<decimal, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "return Transfer.Amount");
 
         Assert.Equal(0m, result);
@@ -565,8 +565,8 @@ public class NullSafetyTests
             Remittance = "Test"
         };
 
-        var result = simpra.Execute<bool, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "Transfer.Currency is \"USD\"");
 
         Assert.False(result);
@@ -583,8 +583,8 @@ public class NullSafetyTests
             Remittance = "Test"
         };
 
-        var result = simpra.Execute<bool, TestModel, SimpraExpressionTests.TestFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(
+            model, new TestFunctions(),
             "Transfer has value");
 
         Assert.False(result);
@@ -605,8 +605,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.True(result);
@@ -625,8 +625,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -645,8 +645,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.True(result);
@@ -665,8 +665,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -685,8 +685,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -705,8 +705,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.True(result);
@@ -725,8 +725,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -745,8 +745,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.True(result);
@@ -758,8 +758,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -771,8 +771,8 @@ public class NullSafetyTests
         var simpra = new Simpra();
         var model = new DebtorAccountModel { DebtorAccount = new DebtorAccount() };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -791,8 +791,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.False(result);
@@ -811,8 +811,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\"");
 
         Assert.True(result);
@@ -832,8 +832,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\" and DebtorAccount.Name is \"VIP\"");
 
         Assert.True(result);
@@ -853,8 +853,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\" and DebtorAccount.Name is \"VIP\"");
 
         Assert.False(result);
@@ -874,8 +874,8 @@ public class NullSafetyTests
             }
         };
 
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\" or DebtorAccount.Name is \"VIP\"");
 
         Assert.True(result);
@@ -896,8 +896,8 @@ public class NullSafetyTests
         };
 
         // (null_dict is "200" and attr is "EU") or name is "VIP" → (false and true) or true → true
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "(DebtorAccount.Properties[\"AccType\"] is \"200\" and DebtorAccount.Attributes[\"Region\"] is \"EU\") or DebtorAccount.Name is \"VIP\"");
 
         Assert.True(result);
@@ -918,8 +918,8 @@ public class NullSafetyTests
         };
 
         // (null_dict is "200" or attr is "EU") and name is "VIP" → (false or true) and true → true
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "(DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\") and DebtorAccount.Name is \"VIP\"");
 
         Assert.True(result);
@@ -940,8 +940,8 @@ public class NullSafetyTests
         };
 
         // (null is "200" or null is "EU") and null_name is "VIP" → (false or false) and false → false
-        var result = simpra.Execute<bool, DebtorAccountModel, SimpraExpressionTests.IFunctions>(
-            model, new SimpraExpressionTests.TestFunctions(),
+        var result = simpra.Execute<bool, DebtorAccountModel, IFunctions>(
+            model, new TestFunctions(),
             "(DebtorAccount.Properties[\"AccType\"] is \"200\" or DebtorAccount.Attributes[\"Region\"] is \"EU\") and DebtorAccount.Name is \"VIP\"");
 
         Assert.False(result);
