@@ -1803,6 +1803,666 @@ public class SimpraExpressionTests
         Assert.Equal("Green", result);
     }
 
+    [Fact]
+    public void BuiltInFunction_Round_WithDecimalsArgument_ShouldRoundToGivenPrecision()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return round(3.14159, 2)");
+        Assert.Equal(3.14m, result);
+
+        result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return round(3.14159, 3)");
+        Assert.Equal(3.142m, result);
+
+        result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return round(-3.14159, 2)");
+        Assert.Equal(-3.14m, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Round_AtMidpoint_ShouldRoundToNearestEvenInteger()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return round(2.5)");
+        Assert.Equal(2m, result);
+
+        result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return round(3.5)");
+        Assert.Equal(4m, result);
+    }
+
+    [Theory]
+    [InlineData(-5, 5)]
+    [InlineData(5, 5)]
+    [InlineData(0, 0)]
+    public void BuiltInFunction_Abs_ShouldReturnAbsoluteValue(int input, int expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), $"return abs({input})");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Abs_WithFractionalValue_ShouldReturnAbsoluteValue()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return abs(-3.5)");
+        Assert.Equal(3.5m, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_String_FromNumber_ShouldReturnDecimalStringRepresentation()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), "return string(42.5)");
+        Assert.Equal("42.5", result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_String_FromBool_ShouldReturnCapitalizedBooleanText()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), "return string(true)");
+        Assert.Equal("True", result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Number_FromString_ShouldParseDecimalValue()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return number('123.45')");
+        Assert.Equal(123.45m, result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Number_FromBool_ShouldReturnOneForTrueAndZeroForFalse()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return number(true)");
+        Assert.Equal(1m, result);
+
+        result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return number(false)");
+        Assert.Equal(0m, result);
+    }
+
+    [Fact(Skip = "Suspected bug: InternalLanguageFunctions.number(SimpraString) calls 'new SimpraNumber(input.Value)' " +
+        "unconditionally instead of checking input.HasValue first (unlike round/abs/sum/substring, which all null-propagate). " +
+        "SimpraString.Value is string.Empty (not null) when the source has no value, so this passes '' to decimal.Parse and " +
+        "throws FormatException instead of returning NoValue. Un-skip once number() null-propagates like its siblings.")]
+    public void BuiltInFunction_Number_FromNullString_ShouldReturnNullInsteadOfThrowing()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Ccy = null;
+
+        var result = simpra.Execute<decimal?, TestModel, TestFunctions>(model, new TestFunctions(), "return number(Ccy)");
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Date_FromString_ShouldParseCorrectDate()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<DateTime, TestModel, TestFunctions>(model, new TestFunctions(), "return date('2024-03-15')");
+        Assert.Equal(new DateTime(2024, 3, 15), result);
+    }
+
+    [Theory]
+    [InlineData("2024-01-01", "2023-01-01", true)]
+    [InlineData("2023-01-01", "2024-01-01", false)]
+    [InlineData("2024-01-01", "2024-01-01", false)]
+    public void SimpraDate_GreaterThanComparison_ShouldCompareChronologically(string left, string right, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), $"return date('{left}') > date('{right}')");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void SimpraDate_Equality_ShouldCompareByValue()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return date('2024-01-01') is date('2024-01-01')");
+        Assert.True(result);
+
+        result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return date('2024-01-01') is not date('2024-01-02')");
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void SimpraDate_Min_ShouldReturnEarlierDate()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<DateTime, TestModel, TestFunctions>(model, new TestFunctions(), "return date('2024-01-01') min date('2023-01-01')");
+        Assert.Equal(new DateTime(2023, 1, 1), result);
+    }
+
+    [Fact]
+    public void SimpraDate_Max_ShouldReturnLaterDate()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<DateTime, TestModel, TestFunctions>(model, new TestFunctions(), "return date('2024-01-01') max date('2023-01-01')");
+        Assert.Equal(new DateTime(2024, 1, 1), result);
+    }
+
+    [Fact]
+    public void SimpraDate_In_ShouldReturnTrue_When_DateExistsInList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(),
+            "return date('2024-01-01') in [date('2024-01-01'), date('2024-06-01')]");
+        Assert.True(result);
+
+        result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(),
+            "return date('2024-12-25') in [date('2024-01-01'), date('2024-06-01')]");
+        Assert.False(result);
+    }
+
+    [Theory]
+    [InlineData(true, false, true)]    // AND NOT: true && !false = true
+    [InlineData(true, true, false)]    // true && !true = false
+    [InlineData(false, true, false)]   // false && !true = false
+    [InlineData(false, false, false)]  // false && !false = false
+    public void BooleanOperator_Subtract_ShouldComputeAndNot(bool left, bool right, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), $"return {(left ? "true" : "false")} - {(right ? "true" : "false")}");
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(true, true, true)]
+    [InlineData(true, false, false)]
+    [InlineData(false, false, false)]
+    public void BooleanOperator_Multiply_ShouldComputeLogicalAnd(bool left, bool right, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), $"return {(left ? "true" : "false")} * {(right ? "true" : "false")}");
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(true, true, false)]   // NAND: not(true && true) = false
+    [InlineData(true, false, true)]
+    [InlineData(false, false, true)]
+    public void BooleanOperator_Divide_ShouldComputeLogicalNand(bool left, bool right, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), $"return {(left ? "true" : "false")} / {(right ? "true" : "false")}");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void BooleanOperator_MinMax_ShouldComputeLogicalAndOr()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return true min false");
+        Assert.False(result);
+
+        result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return true max false");
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void BuiltInFunction_Length_OfBooleanListLiteral_ShouldReturnElementCount()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return length([true, false, true])");
+        Assert.Equal(3m, result);
+    }
+
+    [Theory]
+    [InlineData(10, 3, 3)]     // 10 / 3 = 3.33.. -> 3
+    [InlineData(7, 2, 4)]      // 7 / 2 = 3.5 -> rounds to nearest even (4)
+    [InlineData(9, 2, 4)]      // 9 / 2 = 4.5 -> rounds to nearest even (4)
+    [InlineData(-7, 2, -4)]    // -7 / 2 = -3.5 -> rounds to nearest even (-4)
+    public void BinaryOperator_IntegerDivision_ShouldRoundQuotientToNearestEvenInteger(int left, int right, int expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), $"return {left} // {right}");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void BinaryOperator_IntegerDivision_ByZero_ShouldThrowDivideByZeroException()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), "return 5 // 0");
+        Assert.Throws<DivideByZeroException>(() => f());
+    }
+
+    [Theory]
+    [InlineData(10, 3, 3)]
+    [InlineData(3, 10, 3)]
+    [InlineData(-5, -2, -5)]
+    public void BinaryOperator_Min_ShouldReturnSmallerNumber(int left, int right, int expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), $"return {left} min {right}");
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(10, 3, 10)]
+    [InlineData(3, 10, 10)]
+    [InlineData(-5, -2, -2)]
+    public void BinaryOperator_Max_ShouldReturnLargerNumber(int left, int right, int expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), $"return {left} max {right}");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void UnaryOperator_Plus_ShouldReturnSameNumericValue()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<long, TestModel, TestFunctions>(model, new TestFunctions(), "return +5");
+        Assert.Equal(5, result);
+    }
+
+    [Fact]
+    public void UnaryOperator_Percent_ShouldConvertToHundredth()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return 50%");
+        Assert.Equal(0.5m, result);
+    }
+
+    [Fact]
+    public void UnaryOperator_Percent_AppliedWithinArithmetic_ShouldComputePercentageOfAmount()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer!.Amount = 200;
+
+        var result = simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return Transfer.Amount * 5%");
+        Assert.Equal(10m, result);
+    }
+
+    [Theory]
+    [InlineData(150, true)]
+    [InlineData(1000, false)]
+    [InlineData(50, false)]
+    [InlineData(100, false)]   // lower bound is exclusive
+    [InlineData(101, true)]
+    public void ChainedComparison_WithAndKeyword_ShouldCheckValueIsWithinRange(int amount, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer!.Amount = amount;
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return Transfer.Amount > 100 and < 1000");
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(150, true)]
+    [InlineData(1000, false)]
+    [InlineData(50, false)]
+    public void ChainedComparison_WithOrKeyword_StillCombinesBothSidesWithAnd(int amount, bool expected)
+    {
+        // The grammar accepts 'and'/'or' between the two comparison halves of a chained comparison,
+        // but the visitor (HandleChainedComparison) always combines them with AndAlso regardless of
+        // which keyword was written. This test documents that actual (surprising) behavior.
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        model.Transfer!.Amount = amount;
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return Transfer.Amount > 100 or < 1000");
+        Assert.Equal(expected, result);
+    }
+
+    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
+        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.Any) never matches and this " +
+        "always evaluates false. Un-skip once the equality bug is fixed.")]
+    public void BinaryOperator_AnyIn_ShouldReturnTrue_When_AtLeastOneElementExistsInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2, 3] any in [5, 6, 3]");
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void BinaryOperator_AnyIn_ShouldReturnFalse_When_NoElementsExistInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2, 3] any in [5, 6, 7]");
+        Assert.False(result);
+    }
+
+    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
+        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.All) never matches and this " +
+        "always evaluates false. Un-skip once the equality bug is fixed.")]
+    public void BinaryOperator_AllIn_ShouldReturnTrue_When_EveryElementExistsInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2] all in [1, 2, 3]");
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void BinaryOperator_AllIn_ShouldReturnFalse_When_NotEveryElementExistsInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2, 4] all in [1, 2, 3]");
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void BinaryOperator_AnyNotIn_ShouldReturnTrue_When_NoElementsExistInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2, 3] any not in [5, 6, 7]");
+        Assert.True(result);
+    }
+
+    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
+        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Contains (used by SimpraList.All) never matches, making " +
+        "'all in' always false and this negated operator always true. Un-skip once the equality bug is fixed.")]
+    public void BinaryOperator_AllNotIn_ShouldReturnFalse_When_AllElementsExistInOtherList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<bool, TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2] all not in [1, 2, 3]");
+        Assert.False(result);
+    }
+
+    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
+        "(SimpraNumber.cs ~line 116), so Enumerable.Except (used by the list '-' operator) never matches elements for " +
+        "number lists and nothing is subtracted. Un-skip once the equality bug is fixed. Note this only affects number " +
+        "lists: the equivalent string-list test (Expression_Should_ReturnTrue_When_CurrencyIsInSubtractedList) passes " +
+        "because SimpraString.Equals(object) correctly checks 'obj is SimpraString'.")]
+    public void ListOperator_Subtract_OnNumberLists_ShouldRemoveMatchingElements()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+        var result = simpra.Execute<decimal[], TestModel, TestFunctions>(model, new TestFunctions(), "return [1, 2, 3] - [2, 3]");
+        Assert.Equal([1m], result);
+    }
+
+    [Fact]
+    public void ListOperator_Multiply_ShouldReturnIntersectionOfLists()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string[], TestModel, TestFunctions>(model, new TestFunctions(), "return ['USD', 'EUR', 'GEL'] * ['EUR', 'GEL', 'EUR']");
+
+        Assert.Equal(2, result.Length);
+        Assert.Contains("EUR", result);
+        Assert.Contains("GEL", result);
+        Assert.DoesNotContain("USD", result);
+    }
+
+    [Fact]
+    public void ListOperator_Divide_ShouldThrowInvalidOperationException()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<string[], TestModel, TestFunctions>(model, new TestFunctions(), "return ['USD', 'EUR'] / ['EUR']");
+        Assert.Throws<InvalidOperationException>(() => f());
+    }
+
+    [Fact]
+    public void StringOperator_Multiply_ShouldRepeatStringGivenNumberOfTimes()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), "return 'ab' * 3");
+        Assert.Equal("ababab", result);
+    }
+
+    [Fact]
+    public void StringOperator_Divide_ShouldSplitStringBySeparatorIntoList()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string[], TestModel, TestFunctions>(model, new TestFunctions(), "return 'a,b,c' / ','");
+        Assert.Equal(["a", "b", "c"], result);
+    }
+
+    [Fact]
+    public void CompoundAssignment_PlusEquals_OnLetListVariable_ShouldAppendValue()
+    {
+        const string expressionCode = """
+            $mutable on
+            let list = [1, 2, 3]
+            list += 4
+            return list
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<List<int>, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
+
+        Assert.Equal([1, 2, 3, 4], result);
+    }
+
+    [Fact(Skip = "Suspected bug: SimpraNumber.Equals(object) checks 'obj is SimpraDate' instead of 'obj is SimpraNumber' " +
+        "(SimpraNumber.cs ~line 116), so List<SimpraNumber>.Remove (used by SimpraList.SubtractAndAssign) never finds " +
+        "a match and no element is removed. Un-skip once the equality bug is fixed.")]
+    public void CompoundAssignment_MinusEquals_OnLetListVariable_ShouldRemoveValue()
+    {
+        const string expressionCode = """
+            $mutable on
+            let list = [1, 2, 3]
+            list -= 2
+            return list
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<List<int>, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.DefaultImmutable });
+
+        Assert.Equal([1, 3], result);
+    }
+
+    [Fact]
+    public void MutableDirective_WhenCompilerOptionsAreImmutable_ShouldThrowSimpraException()
+    {
+        const string expressionCode = """
+            $mutable on
+            return 1
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<int, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode,
+            new SimpraCompilerOptions { MutabilityOption = MutabilityOption.Immutable });
+
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void Assignment_WithoutMutableDirective_ShouldThrowSimpraException()
+    {
+        const string expressionCode = """
+            Transfer.Amount = 500
+            return Transfer.Amount
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void Division_ByZero_ShouldThrowDivideByZeroException()
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<decimal, TestModel, TestFunctions>(model, new TestFunctions(), "return 5 / 0");
+
+        Assert.Throws<DivideByZeroException>(() => f());
+    }
+
+    [Fact]
+    public void CallingUndefinedFunction_ShouldThrowSimpraException()
+    {
+        const string expressionCode = "return NonExistentFunction()";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact]
+    public void AccessingUndefinedProperty_ShouldThrowSimpraException()
+    {
+        const string expressionCode = "return NonExistentProperty";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var f = () => simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Throws<SimpraException>(() => f());
+    }
+
+    [Fact(Skip = "Confirmed bug: SimpraParserVisitor.tools.cs CallFunction (~line 213) converts each call " +
+        "argument with 'ConvertToType(expr, paramTypes[i], context)', but 'paramTypes[i]' is the caller-side " +
+        "unwrapped argument type computed earlier (~line 182-195; decimal/bool/string/interop-underlying) used " +
+        "for FindBestMatch overload SCORING, not the selected method's actual declared parameter type " +
+        "(method.GetParameters()[i].ParameterType). Whenever the resolved overload's parameter type differs from " +
+        "that unwrapped type - e.g. a plain 'int' parameter, since any Simpra numeric literal unwraps to 'decimal' " +
+        "- Expression.Call is built with a mismatched argument type and throws ArgumentException at compile time. " +
+        "Un-skip once the fix passes the method's real parameter type to ConvertToType.")]
+    public void CallExternalFunction_WithNonDecimalNumericParameter_ShouldSelectOverloadAndConvertArgument()
+    {
+        const string expressionCode = "return DescribeAsInt(7)";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = simpra.Execute<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal("int:7", result);
+    }
+
+    [Fact]
+    public async Task ExecuteExpression_Should_EvaluateAsyncCallDirectlyWithinArithmeticBinary()
+    {
+        const string expressionCode = "return Compute(3, 4) + 1";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, null, CancellationToken.None);
+        Assert.Equal(8m, result);
+    }
+
+    [Theory]
+    [InlineData("Compute(1, 1) > 1 and Compute(3, 3) > 5", true)]   // left true -> right (async) must be evaluated
+    [InlineData("Compute(1, 1) > 5 and Compute(3, 3) > 5", false)]  // left false -> AND short-circuits, right (async) never evaluated
+    [InlineData("Compute(1, 1) > 5 or Compute(3, 3) > 5", true)]    // left false -> OR must evaluate right (async)
+    [InlineData("Compute(1, 1) > 1 or Compute(3, 3) > 100", true)]  // left true -> OR short-circuits, right (async) never evaluated
+    public async Task ExecuteExpression_Should_ShortCircuitCorrectly_When_AsyncCallIsOnRightOfAndOr(string condition, bool expected)
+    {
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<bool, TestModel, TestFunctions>(model, new TestFunctions(), $"return {condition}", null, CancellationToken.None);
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public async Task ExecuteExpression_Should_EvaluateAsyncCallWithinConditional()
+    {
+        const string expressionCode =
+            """
+            return when Compute(1, 1) > 1 then 'yes' else 'no' end
+            """;
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<string, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, null, CancellationToken.None);
+        Assert.Equal("yes", result);
+    }
+
+    [Fact]
+    public async Task ExecuteExpression_Should_EvaluateMultipleAsyncCallsCombinedInSingleBinaryExpression()
+    {
+        const string expressionCode = "return Compute(1, 2) + Compute(3, 4)";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, null, CancellationToken.None);
+        Assert.Equal(10m, result);
+    }
+
     private static TestModel GetTestModel()
     {
         return new TestModel { Transfer = new Transfer { Amount = 100, Currency = "USD" }, Customer = new Customer { Id = 1, Status = 1 }, Remittance = "Test" };
@@ -1844,6 +2504,10 @@ public class SimpraExpressionTests
         public string Lower(string str) => str.ToLower();
 
         public ValueTask<List<string>> ListOfCurrencyCodes(string name) => ValueTask.FromResult(new List<string>() { "EUR", "GEL" });
+
+        public ValueTask<decimal> ComputeAsync(decimal a, decimal b) => ValueTask.FromResult(a + b);
+
+        public static string DescribeAsInt(int value) => $"int:{value}";
 
         public string[] List(string key)
         {
