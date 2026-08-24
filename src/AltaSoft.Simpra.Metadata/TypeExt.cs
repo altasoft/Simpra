@@ -55,108 +55,173 @@ internal static class TypeExt
             return cachedProperties;
         }
 
+        var visited = new HashSet<Type>();
+        var properties = ProcessPropertiesInternal(type, visited);
+        s_propertyCache[type] = properties;
+        return properties;
+    }
+
+    private static List<PropertyModel> ProcessPropertiesInternal(Type type, HashSet<Type> visited)
+    {
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
         var processedProperties = properties
             .Where(x => x.GetCustomAttribute<JsonIgnoreAttribute>() is null)
             .Where(x => x.GetMethod is not null && x.CanRead)
-            .SelectMany(prop => Process(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) is null, prop.PropertyType)).Distinct().ToList();
+            .SelectMany(prop => Process(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) is null, prop.PropertyType, visited)).Distinct().ToList();
 
-        s_propertyCache[type] = processedProperties;
         return processedProperties;
     }
 
-    private static List<PropertyModel> Process(string name, bool isRequired, Type type)
+    private static List<PropertyModel> Process(string name, bool isRequired, Type type, HashSet<Type> visited)
     {
-        if (type.TryGetUnderlyingDomainPrimitiveType(out var primitive))
+        var actualType = Nullable.GetUnderlyingType(type) ?? type;
+
+        // Check for cycle: if type is already in visited path, skip expansion
+        // but still return the property with its actual type name
+        if (visited.Contains(actualType))
         {
-            return
-            [
-                new PropertyModel
+            return [new PropertyModel
+            {
+                Name = name,
+                Description = type.GetSummaryWithoutException(),
+                Type = actualType.AliasOrName(),  // Return actual type, not generic "object"
+                Required = isRequired
+            }];
+        }
+
+        // Skip XML types (System.Xml namespace) - treat as leaf nodes
+        if (IsXmlType(actualType))
+        {
+            return [new PropertyModel
+            {
+                Name = name,
+                Description = type.GetSummaryWithoutException(),
+                Type = "object",  // XML types are opaque - safe to use generic object
+                Required = isRequired
+            }];
+        }
+
+        // Add current type to visited set to track the recursion path
+        visited.Add(actualType);
+
+        try
+        {
+            if (type.TryGetUnderlyingDomainPrimitiveType(out var primitive))
+            {
+                return
+                [
+                    new PropertyModel
+                    {
+                        Name = name,
+                        Description = type.GetSummaryWithoutException(),
+                        Type = primitive.AliasOrName(),
+                        Required = isRequired
+                    }
+                ];
+            }
+            if (s_primitiveTypes.Contains(type))
+            {
+                return
+                [
+                    new PropertyModel
+                    {
+                        Name = name,
+                        Description = type.GetSummaryWithoutException(),
+                        Type = actualType.AliasOrName(),
+                        Required = isRequired
+                    }
+                ];
+            }
+            if (type.IsEnum || Nullable.GetUnderlyingType(type)?.IsEnum == true)
+            {
+                var enumType = actualType;
+                return
+                [
+                    new PropertyModel
+                    {
+                        Name = name,
+                        Description = string.Join(" ", enumType.GetEnumNames()),
+                        Type = "enum",
+                        Required = isRequired
+                    }
+                ];
+            }
+            if (type.IsArray)
+            {
+                var elementType = type.GetElementType() ?? throw new InvalidOperationException("Should not be null");
+
+                if (elementType.Namespace == "System")
                 {
-                    Name = name,
-                    Description = type.GetSummaryWithoutException(),
-                    Type = primitive.AliasOrName(),
-                    Required = isRequired
+                    var aliasOrName = actualType.AliasOrName();
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
                 }
-            ];
-        }
-        if (s_primitiveTypes.Contains(type))
-        {
-            return
-            [
-                new PropertyModel
+
+                if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
                 {
-                    Name = name,
-                    Description = type.GetSummaryWithoutException(),
-                    Type = (Nullable.GetUnderlyingType(type) ?? type).AliasOrName(),
-                    Required = isRequired
+                    var aliasOrName = primitiveType.AliasOrName();
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
                 }
-            ];
-        }
-        if (type.IsEnum || Nullable.GetUnderlyingType(type)?.IsEnum == true)
-        {
-            var enumType = Nullable.GetUnderlyingType(type) ?? type;
-            return
-            [
-                new PropertyModel
+
+                if (IsXmlType(elementType))
                 {
-                    Name = name,
-                    Description = string.Join(" ", enumType.GetEnumNames()),
-                    Type = "enum",
-                    Required = isRequired
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = "object", Required = isRequired }];
                 }
-            ];
+
+                var collectionProp = ProcessPropertiesInternal(elementType, visited);
+
+                return MapToPrefixedPropertyModels(collectionProp, name);
+            }
+
+            if (type is { IsGenericType: true, GenericTypeArguments.Length: >= 1 } && typeof(IEnumerable).IsAssignableFrom(type))
+            {
+                var elementType = type.GetGenericArguments()[0];
+
+                if (elementType.Namespace == "System")
+                {
+                    var aliasOrName = actualType.AliasOrName();
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+                }
+
+                if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
+                {
+                    var aliasOrName = primitiveType.AliasOrName();
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
+                }
+
+                if (IsXmlType(elementType))
+                {
+                    return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = "object", Required = isRequired }];
+                }
+
+                var collectionProp = ProcessPropertiesInternal(elementType, visited);
+
+                return MapToPrefixedPropertyModels(collectionProp, name);
+            }
+
+            var obj = ProcessPropertiesInternal(Nullable.GetUnderlyingType(type) ?? type, visited);
+            return obj.Select(x => new PropertyModel
+            {
+                Name = $"{name}.{x.Name}",
+                Description = x.Description,
+                Type = x.Type,
+                Required = x.Required
+            }).ToList();
         }
-        if (type.IsArray)
+        finally
         {
-            var elementType = type.GetElementType() ?? throw new InvalidOperationException("Should not be null");
-
-            if (elementType.Namespace == "System")
-            {
-                var aliasOrName = (Nullable.GetUnderlyingType(type) ?? type).AliasOrName();
-                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
-            }
-
-            if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
-            {
-                var aliasOrName = primitiveType.AliasOrName();
-                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
-            }
-
-            var collectionProp = ProcessProperties(elementType);
-
-            return MapToPrefixedPropertyModels(collectionProp, name);
+            // Remove from visited set when backtracking - allows same type in different branches
+            visited.Remove(actualType);
         }
+    }
 
-        if (type is { IsGenericType: true, GenericTypeArguments.Length: >= 1 } && typeof(IEnumerable).IsAssignableFrom(type))
-        {
-            var elementType = type.GetGenericArguments()[0];
+    private static bool IsXmlType(Type type)
+    {
+        if (type.Namespace?.StartsWith("System.Xml") != true)
+            return false;
 
-            if (elementType.Namespace == "System")
-            {
-                var aliasOrName = (Nullable.GetUnderlyingType(type) ?? type).AliasOrName();
-                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
-            }
-
-            if (elementType.TryGetUnderlyingDomainPrimitiveType(out var primitiveType))
-            {
-                var aliasOrName = primitiveType.AliasOrName();
-                return [new PropertyModel { Name = $"{name}[]", Description = type.GetSummaryWithoutException(), Type = aliasOrName, Required = isRequired }];
-            }
-
-            var collectionProp = ProcessProperties(elementType);
-
-            return MapToPrefixedPropertyModels(collectionProp, name);
-        }
-
-        var obj = ProcessProperties(Nullable.GetUnderlyingType(type) ?? type);
-        return obj.Select(x => new PropertyModel
-        {
-            Name = $"{name}.{x.Name}",
-            Description = x.Description,
-            Type = x.Type,
-            Required = x.Required
-        }).ToList();
+        // List of XML DOM types that should not be expanded
+        var xmlTypeNames = new[] { "XmlNode", "XmlElement", "XmlAttribute", "XmlDocument" };
+        return xmlTypeNames.Contains(type.Name);
     }
 
     private static List<PropertyModel> MapToPrefixedPropertyModels(List<PropertyModel> collection, string name)
