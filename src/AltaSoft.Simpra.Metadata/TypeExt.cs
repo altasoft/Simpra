@@ -216,12 +216,7 @@ internal static class TypeExt
 
     private static bool IsXmlType(Type type)
     {
-        if (type.Namespace?.StartsWith("System.Xml") != true)
-            return false;
-
-        // List of XML DOM types that should not be expanded
-        var xmlTypeNames = new[] { "XmlNode", "XmlElement", "XmlAttribute", "XmlDocument" };
-        return xmlTypeNames.Contains(type.Name);
+        return typeof(System.Xml.XmlNode).IsAssignableFrom(type);
     }
 
     private static List<PropertyModel> MapToPrefixedPropertyModels(List<PropertyModel> collection, string name)
