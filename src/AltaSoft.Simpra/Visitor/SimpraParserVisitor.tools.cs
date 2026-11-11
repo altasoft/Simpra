@@ -260,9 +260,9 @@ internal partial class SimpraParserVisitor<TResult, TModel>
             var isAsyncMethod = method.IsAsyncMethod();
             var parameters = method.GetParameters();
 
-            matchWithToken = isAsyncMethod && parameters.Length == argTypes.Length + 1 && parameters[^1].ParameterType == typeof(CancellationToken);
+            var candidateMatchesWithToken = isAsyncMethod && parameters.Length == argTypes.Length + 1 && parameters[^1].ParameterType == typeof(CancellationToken);
 
-            if (parameters.Length == argTypes.Length || matchWithToken)
+            if (parameters.Length == argTypes.Length || candidateMatchesWithToken)
             {
                 // Calculate the match score for the current method
                 var score = CalculateMatchScore(parameters, argTypes, isAsyncMethod);
@@ -272,6 +272,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
                 {
                     bestMatch = method;
                     bestScore = score;
+                    matchWithToken = candidateMatchesWithToken;
                 }
             }
         }
@@ -281,7 +282,7 @@ internal partial class SimpraParserVisitor<TResult, TModel>
         static int CalculateMatchScore(ParameterInfo[] parameters, Type[] argTypes, bool isAsyncMethod)
         {
             var paramsToCheck = parameters.Length;
-            if (isAsyncMethod && parameters[^1].ParameterType == typeof(CancellationToken))
+            if (isAsyncMethod && parameters.Length > 0 && parameters[^1].ParameterType == typeof(CancellationToken))
                 paramsToCheck--;
 
             var score = 0;
