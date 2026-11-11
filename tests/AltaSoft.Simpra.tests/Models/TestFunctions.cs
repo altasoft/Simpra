@@ -41,6 +41,12 @@ public class TestFunctions : BaseFunctions, IFunctions
 
     public static string DescribeAsInt(int value) => $"int:{value}";
 
+    public Task<decimal> GetExchangeRateAsync() => Task.FromResult(3m);
+
+    public decimal Convert(decimal amount) => amount;
+
+    public Task<decimal> ConvertAsync(decimal amount, CancellationToken cancellationToken) => Task.FromResult(amount * 2);
+
     public string[] List(string key)
     {
         return ["RU", "BE"];

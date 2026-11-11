@@ -91,4 +91,28 @@ public class AsyncExecutionTests
         var result = await simpra.ExecuteAsync<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode, null, CancellationToken.None);
         Assert.Equal(10m, result);
     }
+
+    [Fact]
+    public async Task ExecuteExpression_Should_CallAsyncFunctionWithoutParameters()
+    {
+        const string expressionCode = "return GetExchangeRate() * 10";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(30m, result);
+    }
+
+    [Fact]
+    public async Task ExecuteExpression_Should_ResolveOverloadWhenSyncAndCancellableAsyncVariantsExist()
+    {
+        const string expressionCode = "return Convert(5)";
+
+        var simpra = new Simpra();
+        var model = GetTestModel();
+
+        var result = await simpra.ExecuteAsync<decimal, TestModel, TestFunctions>(model, new TestFunctions(), expressionCode);
+        Assert.Equal(5m, result);
+    }
 }
